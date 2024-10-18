@@ -61,7 +61,8 @@
                           <div class="col-lg-6">
                             <div class="form-group">
                               <label for="lastName" class="form-label">Apellido</label>
-                              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Ingresa tu apellido" v-model="user.lastName" required>
+                              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Ingresa tu apellido" v-model="user.lastName" :class="{'is-invalid': errors.lastName}" required>
+                              <div v-if="errors.lastName" class="invalid-feedback">{{ errors.lastName }}</div>
                             </div>
                           </div>
                           <!-- Cédula -->
@@ -76,14 +77,16 @@
                           <div class="col-lg-12">
                             <div class="form-group">
                               <label for="email" class="form-label">Correo Electrónico</label>
-                              <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" v-model="user.email" required>
+                              <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" v-model="user.email" :class="{'is-invalid': errors.email}" required>
+                              <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
                             </div>
                           </div>
+
                           <!-- Teléfono -->
                           <div class="col-lg-12">
                             <div class="form-group">
                               <label for="phoneNumber" class="form-label">Número de Teléfono</label>
-                              <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Ingresa tu teléfono" v-model="user.phoneNumber">
+                              <input type="number" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Ingresa tu teléfono" v-model="user.phoneNumber">
                             </div>
                           </div>
                           <!-- Contraseña -->
@@ -214,6 +217,32 @@
     </div>
     <!-- Fin del Modal de Errores -->
 
+    <!-- Modal de Éxito -->
+    <div
+      class="modal fade"
+      tabindex="-1"
+      :class="{ show: showSuccessModal }"
+      style="display: block;"
+      v-if="showSuccessModal"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">¡Registro Exitoso!</h5>
+            <button type="button" class="btn-close" @click="closeSuccessModal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Tu cuenta ha sido creada exitosamente.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="redirectToLogin">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fin del Modal de Éxito -->
+
+
   </template>
   
   <script>
@@ -248,6 +277,7 @@
         successMessage: '',
         errors: {},
         showModal: false,
+        showSuccessModal: false,
       };
     },
     watch: {
@@ -259,6 +289,14 @@
       },
     },
     methods: {
+    closeSuccessModal() {
+      this.showSuccessModal = false;
+    },
+    redirectToLogin() {
+      this.showSuccessModal = false;
+      // Redirigir a la página de inicio de sesión
+      this.$router.push('/login');
+    },
     selectUserType(type) {
       this.userType = type;
       this.resetForm();
@@ -267,6 +305,9 @@
       this.errorMessage = '';
       this.successMessage = '';
       this.termsAccepted = false;
+      this.errors = {};
+      this.showModal = false;
+      this.showSuccessModal = false;
       if (this.userType === 'volunteer') {
         this.user = {
           firstName: '',
@@ -321,30 +362,22 @@
         return;
       }
 
-      if (this.userType === 'volunteer') {
-        // Lógica para registrar voluntario
-        try {
+      try {
+        if (this.userType === 'volunteer') {
+          // Lógica para registrar voluntario
           const userData = this.convertToLowerCase(this.user);
-          const response = await userApiClient.post('/users/register', userData);
-          this.successMessage = response.data;
-          // Limpiar el formulario
-          this.resetForm();
-          // Redirigir o acciones adicionales
-        } catch (error) {
-          this.handleError(error);
-        }
-      } else if (this.userType === 'company') {
-        // Lógica para registrar compañía
-        try {
+          await userApiClient.post('/users/register', userData);
+        } else if (this.userType === 'company') {
+          // Lógica para registrar compañía
           const companyData = this.convertToLowerCase(this.company);
-          const response = await companyApiClient.post('/companies/register', companyData);
-          this.successMessage = response.data;
-          // Limpiar el formulario
-          this.resetForm();
-          // Redirigir o acciones adicionales
-        } catch (error) {
-          this.handleError(error);
+          await companyApiClient.post('/companies/register', companyData);
         }
+        // Limpiar el formulario
+        this.resetForm();
+        // Mostrar el modal de éxito
+        this.showSuccessModal = true;
+      } catch (error) {
+        this.handleError(error);
       }
     },
     handleError(error) {
@@ -354,14 +387,15 @@
           this.errorMessage = errorData;
         } else if (typeof errorData === 'object') {
           // Manejar errores de validación
-          this.errorMessage = Object.values(errorData).join(' ');
+          this.errors = errorData;
         } else {
           this.errorMessage = 'Ocurrió un error inesperado.';
         }
       } else {
         this.errorMessage = 'Error al conectar con el servidor.';
-        }
-      },
+      }
+    },
+
 
       validateName(name) {
         const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
@@ -471,32 +505,17 @@
         this.showModal = false;
       },
       validatePasswordRealTime() {
-        if (this.userType === 'volunteer') {
-          // Validar contraseña del voluntario
-          if (this.user.password && !this.validatePassword(this.user.password)) {
-            this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
-          } else {
-            delete this.errors.password;
-          }
+        // Validar contraseña
+        if (this.password && !this.validatePassword(this.password)) {
+          this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
+        } else {
+          delete this.errors.password;
+        }
 
-          if (this.user.confirmPassword && this.user.password !== this.user.confirmPassword) {
-            this.errors.confirmPassword = 'Las contraseñas no coinciden.';
-          } else {
-            delete this.errors.confirmPassword;
-          }
-        } else if (this.userType === 'company') {
-          // Validar contraseña de la compañía
-          if (this.company.password && !this.validatePassword(this.company.password)) {
-            this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
-          } else {
-            delete this.errors.password;
-          }
-
-          if (this.company.confirmPassword && this.company.password !== this.company.confirmPassword) {
-            this.errors.confirmPassword = 'Las contraseñas no coinciden.';
-          } else {
-            delete this.errors.confirmPassword;
-          }
+        if (this.confirmPassword && this.password !== this.confirmPassword) {
+          this.errors.confirmPassword = 'Las contraseñas no coinciden.';
+        } else {
+          delete this.errors.confirmPassword;
         }
       },
     },
