@@ -9,6 +9,7 @@ import '@/assets/css/custom.min.css';
 import '@/assets/css/dark.min.css';
 import '@/assets/css/customizer.min.css';
 import '@/assets/css/rtl.min.css';
+import '@/assets/vendor/flatpickr/dist/flatpickr.min.css';
 
 createApp(App)
   .use(router)

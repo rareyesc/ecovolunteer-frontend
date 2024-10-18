@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-undef */
 /*
 * Version: 1.2.0
 * Template: Hope-Ui - Responsive Bootstrap 5 Admin Dashboard Template
@@ -28,7 +31,6 @@ Index Of Script
 ------ Functions --------
 
 :: Resize Plugins
-:: Loader Init
 :: Sidebar Toggle
 :: Back To Top
 
@@ -62,7 +64,9 @@ window.addEventListener('scroll', function () {
 -----------------------------------------------------------------------*/
 var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
 if (typeof bootstrap !== typeof undefined) {
+  // eslint-disable-next-line no-unused-vars
   var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    // eslint-disable-next-line no-undef
     return new bootstrap.Popover(popoverTriggerEl)
   })
 }
@@ -302,23 +306,6 @@ const resizePlugins = () => {
     }
   }
 }
-/*---------------------------------------------------------------------
-              LoaderInit
------------------------------------------------------------------------*/
-const loaderInit = () => {
-  const loader = document.querySelector('.loader');
-  
-  if (loader) {  // Verifica que el elemento loader exista
-    setTimeout(() => {
-      loader.classList.add('animate__animated', 'animate__fadeOut');
-      setTimeout(() => {
-        loader.classList.add('d-none');
-      }, 500);
-    }, 500);
-  } else {
-    console.warn('No se encontró el elemento .loader en el DOM.');
-  }
-};
 
 /*---------------------------------------------------------------------
               Sidebar Toggle
@@ -372,13 +359,6 @@ if (backToTop !== null && backToTop !== undefined) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   })
 }
-/*---------------------------------------------------------------------
-              DOMContentLoaded
------------------------------------------------------------------------*/
-document.addEventListener('DOMContentLoaded', (event) => {
-  resizePlugins()
-  loaderInit()
-});
 /*---------------------------------------------------------------------
               Window Resize
 -----------------------------------------------------------------------*/
