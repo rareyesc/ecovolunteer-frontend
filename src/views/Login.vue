@@ -72,21 +72,41 @@ export default {
     };
   },
   methods: {
+    // Validar si el formato del correo es válido
     validateEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     },
+
+    // Función para decodificar el token JWT y extraer el rol
+    parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      return JSON.parse(jsonPayload);
+    },
+
     async onSubmit() {
-      // Validar si el correo tiene un formato correcto
+      // Eliminar cualquier token previo antes de iniciar sesión
+      localStorage.removeItem('jwt_token');
+      sessionStorage.removeItem('jwt_token');
+
+      // Validar el formato del correo electrónico
       if (!this.validateEmail(this.email)) {
         this.errorMessage = 'El formato del correo electrónico no es válido.';
         return;
       }
-      
-      this.errorMessage = ''; // Limpiar mensaje de error previo
+
+      this.errorMessage = ''; 
 
       try {
-        const response = await fetch('http://localhost:8089/api/auth/login', {
+        const loginApiUrl = `${process.env.VUE_APP_LOGIN_API_URL}`;
+        console.log('Calling API:', loginApiUrl); // Verifica que la URL del login esté correcta
+
+        const response = await fetch(loginApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -115,8 +135,12 @@ export default {
           sessionStorage.setItem('jwt_token', data.token);
         }
 
+        // Decodificar el token JWT para obtener el rol
+        const tokenData = this.parseJwt(data.token);
+        const userRole = tokenData.role || 'no especificado';
+
         // Mostrar el rol del usuario en una alerta
-        window.alert(`Login exitoso. El rol del usuario es: ${data.role || 'no especificado'}`);
+        window.alert(`Login exitoso. El rol del usuario es: ${userRole}`);
 
       } catch (error) {
         // Mostrar mensaje de error
@@ -127,6 +151,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Tus estilos aquí */
