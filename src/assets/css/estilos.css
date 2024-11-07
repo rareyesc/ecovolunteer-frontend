@@ -1,0 +1,234 @@
+/* Estilos generales */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+#app-container {
+  display: flex;
+}
+
+/* Estilos para el sidebar */
+#sidebar {
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-height: 100vh;
+  border-right: 1px solid #dee2e6;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+}
+
+#sidebar.collapsed {
+  width: 80px;
+}
+
+#sidebar .nav-link {
+  border-radius: 0.25rem;
+  color: #000;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#sidebar .nav-link.router-link-active {
+  background-color: #2fb13a !important;
+  color: #fff !important;
+}
+
+#sidebar .nav-link:hover {
+  background-color: #a5e1a7;
+  color: #fff;
+}
+
+#sidebar.collapsed .nav-link {
+  text-align: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+#sidebar.collapsed .nav-link .icon {
+  margin-right: 0;
+}
+
+#sidebar.collapsed .nav-link .item-name {
+  display: none;
+}
+
+#sidebar.collapsed .navbar-brand h4 {
+  display: none;
+}
+
+#sidebar .navbar-brand {
+  padding-left: 0.5rem;
+}
+
+#sidebar .navbar-brand img {
+  margin-left: 0;
+}
+
+#sidebar.collapsed .navbar-brand {
+  justify-content: center;
+}
+
+#sidebar.collapsed .navbar-brand img {
+  margin: 0 auto;
+}
+
+/* Estilos para el botón de colapsar el sidebar */
+.toggle-button {
+  position: fixed;
+  top: 15px; /* Ajusta este valor para posicionar el botón verticalmente */
+  left: 250px; /* Ancho del sidebar expandido */
+  transform: translateX(-50%);
+  background-color: #2fb13a;
+  border-radius: 50%;
+  z-index: 1050; /* Asegura que el botón esté por encima de otros elementos */
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #279c33;
+}
+
+/* Ajuste de la posición del botón cuando el sidebar está colapsado */
+#sidebar.collapsed ~ .toggle-button {
+  left: 80px; /* Ancho del sidebar colapsado */
+}
+
+/* Estilos para el contenido principal */
+#main-content {
+  flex-grow: 1;
+  margin-left: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar.collapsed ~ #main-content {
+  margin-left: 80px;
+}
+
+#main-navbar {
+  width: calc(100% - 250px);
+  margin-left: 250px;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+#sidebar.collapsed ~ #main-content #main-navbar {
+  width: calc(100% - 80px);
+  margin-left: 80px;
+}
+
+/* Ajuste para el área de contenido */
+#content-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 62px; /* Altura del navbar */
+}
+
+/* Hacemos que el card-body sea scrollable */
+.scrollable-card-body {
+  overflow-y: auto;
+  max-height: calc(103vh - 62px - 250px - 70px);
+  height: calc(103vh - 62px - 250px - 70px);
+}
+
+.h-62 {
+  height: 62px;
+}
+
+.img-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.img-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.img-header {
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.ms-6 {
+  margin-left: 250px;
+}
+
+/* Ajuste para dispositivos móviles */
+@media (max-width: 991.98px) {
+  #sidebar,
+  #sidebar.collapsed {
+    left: -250px;
+    transition: left 0.3s ease-in-out;
+  }
+  #sidebar.show {
+    left: 0;
+  }
+  #main-content {
+    margin-left: 0;
+  }
+  #main-navbar {
+    width: 100%;
+    margin-left: 0;
+  }
+  .toggle-button {
+    display: none;
+  }
+}
+
+/* Ajustar z-index del navbar */
+.navbar {
+  z-index: 1000;
+}
+
+/* Estilos adicionales */
+.form-container {
+  background: linear-gradient(to bottom, #c0ffa6, #ffffff); /* Degradado de verde a blanco */
+  padding: 2rem; /* Espaciado alrededor del contenido */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+.btn-purple {
+  background-color: #6f42c1;
+  color: #fff;
+}
+
+.btn-purple:hover {
+  background-color: #5a3791;
+  color: #fff;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.w-30 {
+  width: 30%;
+}
+
+.img-place {
+  max-width: 80%;
+  width: 80%;
+}
+
+.festivo {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+  border-radius: 50%;
+}
