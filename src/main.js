@@ -4,6 +4,8 @@ import router from './router';
 
 // Importar CSS globalmente
 import '@/assets/css/estilos.css';
+import '@fortawesome/fontawesome-free/css/all.css';
+
 //import '@/assets/css/custom.min.css';
 //import '@/assets/css/dark.min.css';
 //import '@/assets/css/customizer.min.css';
