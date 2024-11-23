@@ -1,14 +1,8 @@
 <template>
   <div id="app-container">
     <!-- Sidebar -->
-    <nav
-      id="sidebar"
-      :class="{ collapsed: isSidebarCollapsed }"
-      class="bg-white"
-    >
-      <div
-        class="d-flex align-items-center justify-content-between p-3 border-bottom border-end-0"
-      >
+    <nav id="sidebar" :class="{ collapsed: isSidebarCollapsed }" class="bg-white">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom border-end-0">
         <router-link class="navbar-brand d-flex align-items-center" to="/indexUser">
           <img
             class="img-icon"
@@ -36,11 +30,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/indexUser"
-              exact
-            >
+            <router-link class="nav-link" to="/indexUser" exact>
               <!-- Agregar icono -->
               <i class="fas fa-home me-3"></i>
               <span class="item-name">Inicio</span>
@@ -51,11 +41,7 @@
           </li>
           <!-- Opción directa para Eventos -->
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/eventos"
-              exact
-            >
+            <router-link class="nav-link" to="/eventos" exact>
               <!-- Agregar icono -->
               <i class="fas fa-calendar-alt me-3"></i>
               <span class="item-name">Eventos</span>
@@ -83,9 +69,7 @@
           </button>
           <!-- Contenido del navbar -->
           <div class="collapse navbar-collapse" :class="{ show: navbarCollapsed }" id="navbarContent">
-            <ul
-              class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0"
-            >
+            <ul class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0">
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle d-flex align-items-center"
@@ -123,9 +107,9 @@
       </nav>
 
       <!-- Contenido Principal -->
-      <div id="content-area">
+      <div id="content-area" class="p-4 mt-5">
         <!-- Header -->
-        <div class="header-image">
+        <div class="header-image mb-4">
           <div class="position-relative">
             <!-- Imagen del header -->
             <img
@@ -134,251 +118,215 @@
               class="img-fluid img-header w-100"
             />
             <!-- Texto sobre la imagen -->
-            <div
-              class="position-absolute top-50 translate-middle text-white ms-6"
-            >
+            <div class="position-absolute top-50 translate-middle text-white ms-6">
               <h1>Eventos Disponibles</h1>
               <p>¡Únete a los eventos y sé parte del cambio!</p>
             </div>
           </div>
         </div>
 
-        <!-- Contenido principal -->
-        <div class="container-fluid mt-3 content-wrapper">
-          <!-- Botón para mostrar/ocultar filtros -->
-          <div class="d-flex justify-content-end mb-2">
-            <button class="btn btn-info" @click="toggleFilters">
-              {{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
-            </button>
+        <!-- Encabezado de Tabla y Buscador -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <!-- Nombres de Columnas -->
+          <div class="d-flex gap-4 align-items-center">
+            <span class="sortable-column" @click="sortBy('companyName')">
+              Compañía
+              <i :class="getSortIcon('companyName')" class="ms-2"></i>
+            </span>
+            <span class="sortable-column" @click="sortBy('eventTitle')">
+              Título
+              <i :class="getSortIcon('eventTitle')" class="ms-2"></i>
+            </span>
+            <span class="sortable-column" @click="sortBy('recommendations')">
+              Recomendaciones
+              <i :class="getSortIcon('recommendations')" class="ms-2"></i>
+            </span>
+            <span class="sortable-column" @click="sortBy('applications')">
+              Postulaciones
+              <i :class="getSortIcon('applications')" class="ms-2"></i>
+            </span>
           </div>
 
-          <!-- Barra de Filtrado -->
-          <transition name="fade">
-            <div class="filter-bar mb-4" v-if="showFilters">
-              <h5>Filtrar Eventos</h5>
-              <div class="row">
-                <!-- País -->
-                <div class="col-md-2 mb-3">
-                  <select
-                    class="form-select"
-                    v-model="selectedCountry"
-                    @change="loadDepartments"
-                  >
-                    <option value="">País</option>
-                    <option
-                      v-for="country in countries"
-                      :key="country.id"
-                      :value="country.name"
-                    >
-                      {{ country.name }}
-                    </option>
-                  </select>
+          <!-- Buscador e Ícono de Filtros -->
+          <div class="d-flex align-items-center">
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchQuery"
+              placeholder="Buscar eventos..."
+              @input="applyFilters"
+              aria-label="Buscar eventos"
+            />
+            <!-- Ícono para mostrar el panel de filtros -->
+            <i
+              class="fas fa-filter ms-3 fs-4"
+              role="button"
+              @click="toggleFilterPanel"
+              aria-label="Mostrar filtros"
+            ></i>
+          </div>
+        </div>
+
+        <!-- Lista de Eventos -->
+        <div class="events-container">
+          <div v-if="isLoading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+
+          <div v-else-if="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <div v-else-if="sortedEvents.length === 0" class="alert alert-info" role="alert">
+            No se encontraron eventos.
+          </div>
+
+          <div v-else class="event-list">
+            <div class="event-card" v-for="event in sortedEvents" :key="event.eventId">
+              <!-- Icono de personas en la esquina superior derecha -->
+              <div class="participants-info">
+                <i class="fas fa-users"></i> {{ event.totalParticipantsApplied }}/{{ event.requiredVolunteers }}
+              </div>
+              <div class="event-card-content">
+                <!-- Imagen del evento -->
+                <div class="event-image">
+                  <img :src="getFullImageUrl(event.image_url)" alt="Imagen del Evento" />
                 </div>
-                <!-- Departamento -->
-                <div class="col-md-2 mb-3">
-                  <select
-                    class="form-select"
-                    v-model="selectedDepartment"
-                    @change="loadCities"
-                    :disabled="!departments.length"
-                  >
-                    <option value="">Departamento</option>
-                    <option
-                      v-for="department in departments"
-                      :key="department.id"
-                      :value="department.name"
-                    >
-                      {{ department.name }}
-                    </option>
-                  </select>
+                <!-- Detalles del evento -->
+                <div class="event-details">
+                  <h5 class="event-title"><strong>{{ event.eventName }}</strong></h5>
+                  <p class="event-company"><strong>Compañía:</strong> {{ event.companyName }}</p>
+                  <p class="event-address"><strong>Dirección:</strong> {{ event.addressLine }}</p>
+                  <p class="event-location">
+                    <strong>Ubicación:</strong> {{ event.addressLine }}, {{ event.cityName }}, {{ event.countryName }}
+                  </p>
+                  <p class="event-date-time">
+                    <strong>Fecha:</strong> {{ event.eventDate }} 
+                    <strong>Hora:</strong> {{ event.eventTime }}
+                  </p>
+                  <p class="event-description"><strong>Descripción:</strong> {{ event.description }}</p>
                 </div>
-                <!-- Ciudad -->
-                <div class="col-md-2 mb-3">
-                  <select
-                    class="form-select"
-                    v-model="selectedCity"
-                    @change="loadLocalities"
-                    :disabled="!cities.length"
-                  >
-                    <option value="">Ciudad</option>
-                    <option
-                      v-for="city in cities"
-                      :key="city.id"
-                      :value="city.name"
-                    >
-                      {{ city.name }}
-                    </option>
-                  </select>
+              </div>
+              <!-- Línea divisoria -->
+              <hr />
+
+              <!-- Botones -->
+              <div class="event-footer">
+                <div class="row">
+                  <p class="text-end"> {{ event.totalRecommendations }} Recomendaciones</p>
                 </div>
-                <!-- Localidad -->
-                <div class="col-md-2 mb-3">
-                  <select
-                    class="form-select"
-                    v-model="selectedLocality"
-                    @change="loadNeighborhoods"
-                    :disabled="!localities.length"
-                  >
-                    <option value="">Localidad</option>
-                    <option
-                      v-for="locality in localities"
-                      :key="locality.id"
-                      :value="locality.name"
-                    >
-                      {{ locality.name }}
-                    </option>
-                  </select>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <button class="btn btn-primary w-100" @click="joinEvent(event)">
+                      Postularse como Voluntario
+                    </button>
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <button class="btn btn-secondary w-100" @click="recommendEvent(event)">
+                      <i class="fas fa-thumbs-up"></i> Recomendar
+                    </button>
+                  </div>
                 </div>
-                <!-- Barrio -->
-                <div class="col-md-2 mb-3">
-                  <select
-                    class="form-select"
-                    v-model="selectedNeighborhood"
-                    :disabled="!neighborhoods.length"
-                  >
-                    <option value="">Barrio</option>
-                    <option
-                      v-for="neighborhood in neighborhoods"
-                      :key="neighborhood.id"
-                      :value="neighborhood.name"
-                    >
-                      {{ neighborhood.name }}
-                    </option>
-                  </select>
-                </div>
-                <!-- Buscar -->
-                <div class="col-md-2 mb-3">
-                  <input
-                    type="text"
-                    v-model="searchQuery"
-                    placeholder="Buscar eventos..."
-                    class="form-control"
-                  />
-                </div>
-                <!-- Botón para Aplicar Filtros -->
-                <div class="col-md-1 mb-3">
-                  <button class="btn btn-primary w-100" @click="applyFilters">
-                    Filtrar
-                  </button>
-                </div>
-                <!-- Botón para Limpiar Filtros -->
-                <div class="col-md-1 mb-3">
-                  <button class="btn btn-secondary w-100" @click="clearFilters">
-                    Limpiar
-                  </button>
+                <!-- Sección de preguntas -->
+                <div class="event-questions mt-3">
+                  <h6>Preguntas</h6>
+                  <ul>
+                    <li v-for="(question, index) in (event.questions ? event.questions.slice(0, 3) : [])" :key="index">
+                      <strong>{{ question.user }}:</strong> {{ question.text }}
+                      <div v-if="question.answer" class="answer">
+                        <strong>Respuesta:</strong> {{ question.answer }}
+                      </div>
+                    </li>
+                  </ul>
+                  <div class="add-question">
+                    <input
+                      type="text"
+                      v-model="newQuestionText[event.eventId]"
+                      placeholder="Haz una pregunta..."
+                      class="form-control"
+                      @keyup.enter="addQuestion(event)"
+                      aria-label="Añadir pregunta"
+                    />
+                    <button class="btn btn-primary mt-2" @click="addQuestion(event)">
+                      Enviar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </transition>
-
-          <!-- Sección de eventos con scroll -->
-          <div class="events-container">
-            <div v-if="isLoading" class="text-center">
-              <div class="spinner-border" role="status">
-                <span class="visually-hidden">Cargando...</span>
-              </div>
-            </div>
-
-            <div v-else-if="errorMessage" class="alert alert-danger" role="alert">
-              {{ errorMessage }}
-            </div>
-
-            <div v-else>
-              <div class="event-list">
-  <div class="event-card" v-for="event in events" :key="event.eventId">
-    <!-- Icono de personas en la esquina superior derecha -->
-    <div class="participants-info">
-      <i class="fas fa-users"></i> {{ event.totalParticipantsApplied }}/{{ event.requiredVolunteers }}
-    </div>
-    <div class="event-card-content">
-      <!-- Imagen del evento -->
-      <div class="event-image">
-        <img
-          :src="event.image_url || 'https://via.placeholder.com/300x200'"
-          alt="Imagen del Evento"
-        />
-      </div>
-      <!-- Detalles del evento -->
-      <div class="event-details">
-        <h5 class="event-title">{{ event.eventName }}</h5>
-        <p class="event-description">{{ event.description }}</p>
-        <p class="event-company"><strong>Compañía:</strong> {{ event.companyName }}</p>
-        <p class="event-address"><strong>Dirección:</strong> {{ event.addressLine }}</p>
-        <p class="event-location">
-          <strong>Ubicación:</strong>
-          {{ event.neighborhoodName }}, {{ event.localityName }}, {{ event.cityName }},
-          {{ event.departmentName }}, {{ event.countryName }}
-        </p>
-        <p class="event-date-time">
-          <strong>Fecha:</strong> {{ event.eventDate }}<br />
-          <strong>Hora:</strong> {{ event.eventTime }}
-        </p>
-      </div>
-    </div>
-    <!-- Línea divisoria -->
-    <hr />
-    <!-- Botones -->
-    <div class="event-footer">
-      <div class="row">
-        <div class="col-md-6 mb-2">
-          <button class="btn btn-primary w-100" @click="joinEvent(event)">
-            Postularse como Voluntario
-          </button>
+          </div>
         </div>
-        <div class="col-md-6 mb-2">
-          <button class="btn btn-secondary w-100" @click="recommendEvent(event)">
-            <i class="fas fa-thumbs-up"></i> Recomendar
-          </button>
-        </div>
-      </div>
-      <!-- Sección de preguntas -->
-      <div class="event-questions mt-3">
-        <h6>Preguntas</h6>
-        <ul>
-          <li v-for="(question, index) in (event.questions ? event.questions.slice(0, 3) : [])" :key="index">
-            <strong>{{ question.user }}:</strong> {{ question.text }}
-            <div v-if="question.answer" class="answer">
-              <strong>Respuesta:</strong> {{ question.answer }}
-            </div>
-          </li>
-        </ul>
-        <div class="add-question">
-          <input
-            type="text"
-            v-model="newQuestionText[event.eventId]"
-            placeholder="Haz una pregunta..."
-            class="form-control"
-          />
-          <button class="btn btn-primary mt-2" @click="addQuestion(event)">
-            Enviar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
+        <!-- Panel Lateral de Filtros -->
+        <transition name="slide">
+          <div class="filter-panel bg-light shadow-lg p-4" v-if="showFilters">
+            <h5>Filtrar Eventos</h5>
+            <!-- Dropdowns de Filtros -->
+            <div class="mb-3">
+              <select class="form-select" v-model="selectedCountry" @change="loadDepartments" aria-label="Seleccionar país">
+                <option value="">País</option>
+                <option v-for="country in countries" :key="country.id" :value="country.name">
+                  {{ country.name }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" v-model="selectedDepartment" @change="loadCities" :disabled="!departments.length" aria-label="Seleccionar departamento">
+                <option value="">Departamento</option>
+                <option v-for="department in departments" :key="department.id" :value="department.name">
+                  {{ department.name }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" v-model="selectedCity" @change="loadLocalities" :disabled="!cities.length" aria-label="Seleccionar ciudad">
+                <option value="">Ciudad</option>
+                <option v-for="city in cities" :key="city.id" :value="city.name">
+                  {{ city.name }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" v-model="selectedLocality" @change="loadNeighborhoods" :disabled="!localities.length" aria-label="Seleccionar localidad">
+                <option value="">Localidad</option>
+                <option v-for="locality in localities" :key="locality.id" :value="locality.name">
+                  {{ locality.name }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" v-model="selectedNeighborhood" :disabled="!neighborhoods.length" aria-label="Seleccionar barrio">
+                <option value="">Barrio</option>
+                <option v-for="neighborhood in neighborhoods" :key="neighborhood.id" :value="neighborhood.name">
+                  {{ neighborhood.name }}
+                </option>
+              </select>
+            </div>
+            <!-- Botones -->
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-primary" @click="applyFilters">Aplicar</button>
+              <button class="btn btn-secondary" @click="clearFilters">Limpiar</button>
             </div>
           </div>
-          <!-- Fin de los eventos -->
-        </div>
-
-        <!-- Footer -->
-        <footer class="bg-light mt-3">
-          <div
-            class="d-flex justify-content-between align-items-center p-3"
-          >
-            <ul class="list-inline mb-0">
-              <li class="list-inline-item">
-                <a href="#">Políticas de privacidad</a>
-              </li>
-              <li class="list-inline-item"><a href="#">Términos de uso</a></li>
-            </ul>
-            <div>
-              ©{{ currentYear }} Ecovolunteer, Hecho por Ecovolunteer.
-            </div>
-          </div>
-        </footer>
+        </transition>
       </div>
+
+      <!-- Footer -->
+      <footer class="bg-light mt-3">
+        <div class="d-flex justify-content-between align-items-center p-3">
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item">
+              <a href="#">Políticas de privacidad</a>
+            </li>
+            <li class="list-inline-item"><a href="#">Términos de uso</a></li>
+          </ul>
+          <div>
+            ©{{ currentYear }} Ecovolunteer, Hecho por Ecovolunteer.
+          </div>
+        </div>
+      </footer>
     </div>
 
     <!-- Botón para colapsar el sidebar -->
@@ -396,8 +344,9 @@
   </div>
 </template>
 
+
 <script>
-import { eventApiClient } from '@/services/api'; // Ajusta la ruta según tu estructura de carpetas
+import { eventApiClient } from '@/services/api'; // Asegúrate de que la ruta sea correcta
 
 export default {
   name: 'indexUser',
@@ -408,25 +357,44 @@ export default {
       navbarCollapsed: false,
       dropdownOpen: false,
       searchQuery: '',
-      selectedCompanyName: '', // Añadido para filtrar por empresa
+      selectedCompanyName: '', // Para filtrar por empresa
       selectedCountry: '',
       selectedDepartment: '',
       selectedCity: '',
       selectedLocality: '',
       selectedNeighborhood: '',
-      showFilters: true, // Variable para mostrar u ocultar los filtros
+      showFilters: false, // Mostrar/ocultar filtros
       countries: [],
       departments: [],
       cities: [],
       localities: [],
       neighborhoods: [],
-      events: [], // Almacenará los eventos obtenidos desde el backend
+      events: [], // Eventos obtenidos desde el backend
       newQuestionText: {},
       isLoading: false,
       errorMessage: '',
+      sortColumn: 'recommendations', // Ordenamiento inicial
+      sortDirection: 'desc', // Dirección de ordenamiento inicial
     };
   },
+  computed: {
+    sortedEvents() {
+      if (!this.sortColumn) return this.events;
+
+      return this.events.slice().sort((a, b) => {
+        let modifier = this.sortDirection === 'asc' ? 1 : -1;
+        // Asegúrate de que los campos existen y son comparables
+        if (a[this.sortColumn] < b[this.sortColumn]) return -1 * modifier;
+        if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier;
+        return 0;
+      });
+    },
+  },
   methods: {
+    getFullImageUrl(imagePath) {
+      const baseUrl = "http://localhost:8090"; // Cambia este valor si tu backend está en otro dominio
+      return imagePath ? `${baseUrl}${imagePath}` : "https://via.placeholder.com/300x200";
+    },
     toggleSidebar() {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
     },
@@ -436,11 +404,26 @@ export default {
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
     },
-    toggleFilters() {
+    toggleFilterPanel() {
       this.showFilters = !this.showFilters;
       if (!this.showFilters) {
-        this.clearFilters();
+        // Opcional: Limpiar filtros al cerrar el panel
+        // this.clearFilters();
       }
+    },
+    sortBy(column) {
+      if (this.sortColumn === column) {
+        // Cambiar la dirección de ordenamiento si se hace clic en la misma columna
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        // Cambiar a una nueva columna y establecer la dirección ascendente
+        this.sortColumn = column;
+        this.sortDirection = 'asc';
+      }
+    },
+    getSortIcon(column) {
+      if (this.sortColumn !== column) return 'fa-sort';
+      return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
     },
     async fetchEvents() {
       this.isLoading = true;
@@ -450,13 +433,13 @@ export default {
 
         if (this.selectedCompanyName) params.companyName = this.selectedCompanyName;
         if (this.selectedCity) params.cityName = this.selectedCity;
-        if (this.sortBy) params.sortBy = this.sortBy;
+        if (this.sortColumn) params.sortBy = this.sortColumn;
         if (this.sortDirection) params.sortDirection = this.sortDirection;
 
         // Añadir searchQuery si deseas buscar por nombre
         if (this.searchQuery) params.searchQuery = this.searchQuery;
 
-        const response = await eventApiClient.get('', { params });
+        const response = await eventApiClient.get('');
         this.events = response.data;
       } catch (error) {
         console.error('Error al obtener los eventos:', error);
@@ -494,6 +477,9 @@ export default {
       if (this.newQuestionText[event.eventId]) {
         // Aquí deberías realizar una llamada al backend para agregar la pregunta
         // Por ahora, agregaremos la pregunta localmente
+        if (!event.questions) {
+          this.$set(event, 'questions', []);
+        }
         event.questions.push({
           user: 'Tú',
           text: this.newQuestionText[event.eventId],
@@ -502,9 +488,9 @@ export default {
         this.newQuestionText[event.eventId] = '';
       }
     },
-    // Métodos para cargar datos de los filtros (simulados o desde el backend)
+    // Métodos para cargar datos de los filtros (ahora estáticos)
     loadCountries() {
-      // Simular la carga de países o realizar una llamada al backend
+      // Datos estáticos para países
       this.countries = [
         { id: 1, name: 'Colombia' },
         { id: 2, name: 'México' },
@@ -512,13 +498,19 @@ export default {
       ];
     },
     loadDepartments() {
-      // Simular la carga de departamentos según el país seleccionado
+      // Datos estáticos para departamentos según el país seleccionado
       if (this.selectedCountry === 'Colombia') {
         this.departments = [
           { id: 1, name: 'Atlántico' },
           { id: 2, name: 'Cundinamarca' },
           { id: 3, name: 'Antioquia' },
           // Agrega más departamentos
+        ];
+      } else if (this.selectedCountry === 'México') {
+        this.departments = [
+          { id: 4, name: 'Jalisco' },
+          { id: 5, name: 'Nuevo León' },
+          // Agrega más departamentos para México
         ];
       } else {
         this.departments = [];
@@ -532,20 +524,35 @@ export default {
       this.selectedNeighborhood = '';
     },
     loadCities() {
-      // Simular la carga de ciudades según el departamento seleccionado
+      // Datos estáticos para ciudades según el departamento seleccionado
       if (this.selectedDepartment === 'Atlántico') {
         this.cities = [
           { id: 1, name: 'Barranquilla' },
+          { id: 2, name: 'Sabanalarga' },
           // Agrega más ciudades
         ];
       } else if (this.selectedDepartment === 'Cundinamarca') {
         this.cities = [
-          { id: 2, name: 'Bogotá' },
+          { id: 3, name: 'Bogotá' },
+          { id: 4, name: 'Soacha' },
           // Agrega más ciudades
         ];
       } else if (this.selectedDepartment === 'Antioquia') {
         this.cities = [
-          { id: 3, name: 'Medellín' },
+          { id: 5, name: 'Medellín' },
+          { id: 6, name: 'Envigado' },
+          // Agrega más ciudades
+        ];
+      } else if (this.selectedDepartment === 'Jalisco') {
+        this.cities = [
+          { id: 7, name: 'Guadalajara' },
+          { id: 8, name: 'Puerto Vallarta' },
+          // Agrega más ciudades
+        ];
+      } else if (this.selectedDepartment === 'Nuevo León') {
+        this.cities = [
+          { id: 9, name: 'Monterrey' },
+          { id: 10, name: 'San Pedro Garza García' },
           // Agrega más ciudades
         ];
       } else {
@@ -558,20 +565,35 @@ export default {
       this.selectedNeighborhood = '';
     },
     loadLocalities() {
-      // Simular la carga de localidades según la ciudad seleccionada
+      // Datos estáticos para localidades según la ciudad seleccionada
       if (this.selectedCity === 'Barranquilla') {
         this.localities = [
           { id: 1, name: 'Centro' },
+          { id: 2, name: 'El Prado' },
           // Agrega más localidades
         ];
       } else if (this.selectedCity === 'Bogotá') {
         this.localities = [
-          { id: 2, name: 'Usaquén' },
+          { id: 3, name: 'Usaquén' },
+          { id: 4, name: 'Chapinero' },
           // Agrega más localidades
         ];
       } else if (this.selectedCity === 'Medellín') {
         this.localities = [
-          { id: 3, name: 'El Poblado' },
+          { id: 5, name: 'El Poblado' },
+          { id: 6, name: 'Bello' },
+          // Agrega más localidades
+        ];
+      } else if (this.selectedCity === 'Guadalajara') {
+        this.localities = [
+          { id: 7, name: 'Tlaquepaque' },
+          { id: 8, name: 'Zapopan' },
+          // Agrega más localidades
+        ];
+      } else if (this.selectedCity === 'Monterrey') {
+        this.localities = [
+          { id: 9, name: 'San Pedro Garza García' },
+          { id: 10, name: 'Cumbres' },
           // Agrega más localidades
         ];
       } else {
@@ -582,20 +604,35 @@ export default {
       this.selectedNeighborhood = '';
     },
     loadNeighborhoods() {
-      // Simular la carga de barrios según la localidad seleccionada
+      // Datos estáticos para barrios según la localidad seleccionada
       if (this.selectedLocality === 'Centro') {
         this.neighborhoods = [
-          { id: 1, name: 'El Prado' },
+          { id: 1, name: 'La Candelaria' },
+          { id: 2, name: 'La Merced' },
           // Agrega más barrios
         ];
       } else if (this.selectedLocality === 'Usaquén') {
         this.neighborhoods = [
-          { id: 2, name: 'Santa Bárbara' },
+          { id: 3, name: 'Santa Bárbara' },
+          { id: 4, name: 'La Florida' },
           // Agrega más barrios
         ];
       } else if (this.selectedLocality === 'El Poblado') {
         this.neighborhoods = [
-          { id: 3, name: 'La Loma' },
+          { id: 5, name: 'La 70' },
+          { id: 6, name: 'Castilla' },
+          // Agrega más barrios
+        ];
+      } else if (this.selectedLocality === 'Tlaquepaque') {
+        this.neighborhoods = [
+          { id: 7, name: 'El Arenal' },
+          { id: 8, name: 'Plaza Patria' },
+          // Agrega más barrios
+        ];
+      } else if (this.selectedLocality === 'San Pedro Garza García') {
+        this.neighborhoods = [
+          { id: 9, name: 'Villa Fontana' },
+          { id: 10, name: 'Fundidora' },
           // Agrega más barrios
         ];
       } else {
@@ -611,7 +648,10 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
+
 /* Estilos personalizados */
 #app-container {
   display: flex;
@@ -641,6 +681,7 @@ export default {
   margin-left: 250px;
   display: flex;
   flex-direction: column;
+  transition: margin-left 0.3s ease;
 }
 
 #sidebar.collapsed ~ #main-content {
@@ -669,44 +710,47 @@ export default {
   margin-left: 80px;
 }
 
-/* Contenedor para el contenido principal */
-.content-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+/* Nombres de Columnas Ordenables */
+.sortable-column {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
 }
 
-/* Estilos para el filtro */
-.filter-bar {
+.sortable-column i {
+  transition: transform 0.2s;
+}
+
+/* Transición del panel lateral de filtros */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter {
+  transform: translateX(100%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+/* Panel lateral de filtros */
+.filter-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 300px;
+  z-index: 1050;
+  overflow-y: auto;
   background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 0.25rem;
 }
 
-.filter-bar .form-control,
-.filter-bar .form-select {
-  width: 100%;
-}
-
-.filter-bar h5 {
-  margin-bottom: 1rem;
-}
-
-/* Estilos para la transición del filtro */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* Estilos para la sección de eventos */
+/* Estilo para la lista de eventos */
 .events-container {
   overflow-y: auto;
   flex-grow: 1; /* Para que ocupe el espacio disponible */
+  padding-right: 1rem; /* Espacio para evitar superposición con el scrollbar */
 }
 
 .event-list {
@@ -714,7 +758,7 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  padding-bottom: 1rem; /* Añadimos un padding inferior para evitar que el último elemento quede pegado al borde */
+  padding-bottom: 1rem; /* Evitar que el último elemento quede pegado al borde */
 }
 
 /* Estilos para las tarjetas de eventos */
@@ -725,8 +769,9 @@ export default {
   border-radius: 0.25rem;
   overflow: hidden;
   padding: 1rem;
-  width: 90%;
+  width: 100%;
   max-width: 800px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Icono de participantes */
@@ -755,7 +800,7 @@ export default {
 /* Imagen del evento */
 .event-image img {
   width: 300px;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
   border-radius: 0.25rem;
 }
@@ -821,6 +866,14 @@ export default {
   background-color: #5a6268;
 }
 
+.btn-primary {
+  background-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
 .btn-info {
   background-color: #17a2b8;
   border-color: #17a2b8;
@@ -867,5 +920,11 @@ export default {
     width: 100%;
     text-align: center;
   }
+
+  /* Ajuste del panel de filtros en móviles */
+  .filter-panel {
+    width: 80%;
+  }
 }
 </style>
+

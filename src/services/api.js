@@ -30,6 +30,23 @@ function getToken() {
   return localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
 }
 
+// Función para refrescar el token
+async function refreshToken() {
+  const token = getToken();
+  if (!token) return;
+
+  try {
+    const response = await axios.post(process.env.VUE_APP_REFRESH_TOKEN_API_URL, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    localStorage.setItem('jwt_token', response.data.token);
+  } catch (error) {
+    console.error('Error al refrescar el token:', error);
+    window.location.href = '/logout';
+  }
+}
 
 // Agregar interceptor al userApiClient
 userApiClient.interceptors.request.use(config => {
@@ -56,4 +73,4 @@ eventApiClient.interceptors.request.use(
   }
 );
 
-export { userApiClient, companyApiClient, eventApiClient };
+export { userApiClient, companyApiClient, eventApiClient, getToken,refreshToken };

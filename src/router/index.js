@@ -11,15 +11,7 @@ import misEventosCompany from '@/views/misEventosCompany.vue';
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = JSON.parse(atob(base64));
-  return jsonPayload;
-}
-
-// Función para verificar si el token ha expirado
-function isTokenExpired(token) {
-  const payload = parseJwt(token);
-  const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
-  return payload.exp < currentTime;
+  return JSON.parse(atob(base64));
 }
 
 // Función para obtener el rol del token
@@ -76,17 +68,9 @@ const routes = [
     path: '/logout',
     name: 'Logout',
     beforeEnter: (to, from, next) => {
-      // Lógica de logout: eliminar el token y redirigir
       localStorage.removeItem('jwt_token');
       sessionStorage.removeItem('jwt_token');
-
-      // Usar history.pushState para prevenir el retroceso
-      window.history.pushState(null, '', window.location.href);
-      window.addEventListener('popstate', () => {
-        window.history.pushState(null, '', window.location.href);
-      });
-
-      next({ name: 'Login' }); // Redirigir a la página de Login
+      next({ name: 'Login' });
     },
   },
 ];
@@ -101,58 +85,29 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
   const isAuthenticated = !!token;
   const userRole = getRoleFromToken();
-  const isExpired = token ? isTokenExpired(token) : true;
 
-  if (!isAuthenticated || isExpired) {
-    // Si no está autenticado o el token ha expirado, redirigir al Login
-    if (to.name !== 'Login' && to.name !== 'Register' && to.name !== 'Home') {
-      showModal('Acceso denegado o sesión expirada. Por favor, inicia sesión de nuevo.');
-      next({ name: 'Login' });
-    } else {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated) {
+      // Si no está autenticado, redirige al login
+      next({ name: 'Login', replace: true }); // Usa replace para evitar que se pueda retroceder
+    } else if (userRole && rolePermissions[userRole]?.includes(to.name)) {
+      // Si el rol coincide con la ruta, permite el acceso
       next();
+    } else {
+      // Si no tiene permisos, redirige al inicio según su rol
+      const defaultRoute = rolePermissions[userRole]?.[0] || 'Home';
+      next({ name: defaultRoute, replace: true }); // Usa replace para evitar retrocesos no deseados
     }
   } else {
-    // Si está autenticado y el token es válido
-    if (to.name === 'Login' || to.name === 'Register') {
-      // Si intenta ir a Login o Register, redirigir al índice correspondiente
-      if (userRole === 'Admin') {
-        next({ name: 'indexAdmin' });
-      } else if (userRole === 'Company') {
-        next({ name: 'indexCompany' });
-      } else if (userRole === 'Volunteer') {
-        next({ name: 'indexUser' });
-      } else {
-        next({ name: 'Home' });
-      }
-    } else if (to.matched.some(record => record.meta.requiresAuth)) {
-      // Verificar permisos de rol
-      if (!rolePermissions[userRole] || !rolePermissions[userRole].includes(to.name)) {
-        showModal('Acceso denegado. No tienes permiso para esta página.');
-        next(false); // Evitar la navegación
-      } else {
-        next();
-      }
+    // Para rutas públicas
+    if (isAuthenticated && (to.name === 'Login' || to.name === 'Register')) {
+      // Evita que los usuarios autenticados vuelvan al login o registro
+      const defaultRoute = rolePermissions[userRole]?.[0] || 'Home';
+      next({ name: defaultRoute, replace: true });
     } else {
-      next();
+      next(); // Permite el acceso a rutas públicas
     }
   }
 });
-
-// Comprobar la expiración del token cada minuto
-setInterval(() => {
-  const token = localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
-  if (token && isTokenExpired(token)) {
-    showModal('Tu sesión ha expirado. Por favor, refresca el token.');
-  }
-}, 60000); // 60000 ms = 1 minuto
-
-// Función para mostrar el modal
-function showModal(message) {
-  const modal = document.getElementById('modal'); // Ajusta esto a tu modal específico
-  if (modal) {
-    modal.style.display = 'block';
-    document.getElementById('modalMessage').innerText = message;
-  }
-}
 
 export default router;

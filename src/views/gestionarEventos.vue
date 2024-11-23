@@ -139,7 +139,8 @@
                       <a class="dropdown-item" href="#">Configuración Privada</a>
                     </li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+                  <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
+                   
                   </ul>
                 </li>
               </ul>
