@@ -24,7 +24,6 @@ const eventApiClient = axios.create({
   },
 });
 
-
 // Función para obtener el token
 function getToken() {
   return localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
@@ -73,4 +72,4 @@ eventApiClient.interceptors.request.use(
   }
 );
 
-export { userApiClient, companyApiClient, eventApiClient, getToken,refreshToken };
+export { userApiClient, companyApiClient, eventApiClient, getToken, refreshToken };
