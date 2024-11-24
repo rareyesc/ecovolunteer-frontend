@@ -129,23 +129,33 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <!-- Nombres de Columnas -->
           <div class="d-flex gap-4 align-items-center">
+            <span class="sortable-column" @click="sortBy('eventDate')">
+              Fecha del evento
+              <i v-if="sortColumn === 'eventDate'" :class="getSortIcon('eventDate')" class="ms-2"></i>
+            </span>
+
+            <span class="sortable-column" @click="sortBy('eventName')">
+              Título
+              <i v-if="sortColumn === 'eventName'" :class="getSortIcon('eventName')" class="ms-2"></i>
+            </span>
+
             <span class="sortable-column" @click="sortBy('companyName')">
               Compañía
-              <i :class="getSortIcon('companyName')" class="ms-2"></i>
+              <i v-if="sortColumn === 'companyName'" :class="getSortIcon('companyName')" class="ms-2"></i>
             </span>
-            <span class="sortable-column" @click="sortBy('eventTitle')">
-              Título
-              <i :class="getSortIcon('eventTitle')" class="ms-2"></i>
-            </span>
-            <span class="sortable-column" @click="sortBy('recommendations')">
+
+            <span class="sortable-column" @click="sortBy('totalRecommendations')">
               Recomendaciones
-              <i :class="getSortIcon('recommendations')" class="ms-2"></i>
+              <i v-if="sortColumn === 'totalRecommendations'" :class="getSortIcon('totalRecommendations')" class="ms-2"></i>
             </span>
-            <span class="sortable-column" @click="sortBy('applications')">
+
+            <span class="sortable-column" @click="sortBy('totalParticipantsApplied')">
               Postulaciones
-              <i :class="getSortIcon('applications')" class="ms-2"></i>
+              <i v-if="sortColumn === 'totalParticipantsApplied'" :class="getSortIcon('totalParticipantsApplied')" class="ms-2"></i>
             </span>
           </div>
+
+
 
           <!-- Buscador e Ícono de Filtros -->
           <div class="d-flex align-items-center">
@@ -219,14 +229,18 @@
                 </div>
                 <div class="row">
                   <div class="col-md-6 mb-2">
-                    <button class="btn btn-primary w-100" @click="joinEvent(event)">
-                      Postularse como Voluntario
-                    </button>
+                    <button class="btn btn-primary w-100" @click="toggleApplication(event)">
+                    {{ event.hasApplied ? 'Cancelar Postulación' : 'Postularse como Voluntario' }}
+                  </button>
+
+
                   </div>
                   <div class="col-md-6 mb-2">
-                    <button class="btn btn-secondary w-100" @click="recommendEvent(event)">
-                      <i class="fas fa-thumbs-up"></i> Recomendar
+                    <button class="btn btn-secondary w-100" @click="toggleRecommendation(event)">
+                      <i class="fas fa-thumbs-up"></i>
+                      {{ event.hasRecommended ? 'Cancelar Recomendación' : 'Recomendar' }}
                     </button>
+
                   </div>
                 </div>
                 <!-- Sección de preguntas -->
@@ -262,6 +276,11 @@
         <!-- Panel Lateral de Filtros -->
         <transition name="slide">
           <div class="filter-panel bg-light shadow-lg p-4" v-if="showFilters">
+            <button 
+              class="btn-close float-end" 
+              aria-label="Cerrar filtros" 
+              @click="toggleFilterPanel"
+            ></button>
             <h5>Filtrar Eventos</h5>
             <!-- Dropdowns de Filtros -->
             <div class="mb-3">
@@ -308,6 +327,8 @@
             <div class="d-flex justify-content-between">
               <button class="btn btn-primary" @click="applyFilters">Aplicar</button>
               <button class="btn btn-secondary" @click="clearFilters">Limpiar</button>
+              <button class="btn btn-secondary" @click="toggleFilterPanel">Cancelar</button>
+
             </div>
           </div>
         </transition>
@@ -342,6 +363,77 @@
       ></i>
     </button>
   </div>
+
+
+    <!-- Modal de Confirmación con Transición -->
+    <transition name="fade">
+      <div v-if="showConfirmationModal" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar Cancelación</h5>
+            <button type="button" class="close-button" @click="handleModalCancel">&times;</button>
+          </div>
+          <div class="modal-body">
+            {{ confirmationMessage }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="handleModalCancel">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" @click="handleModalConfirm">
+              Sí, cancelar postulación
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal de Notificación con Transición -->
+    <transition name="fade">
+      <div v-if="showNotificationModal" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h5 class="modal-title" :class="notificationClass">
+              {{ notificationTitle }}
+            </h5>
+            <button type="button" class="close-button" @click="closeNotificationModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            {{ notificationMessage }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="closeNotificationModal">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+    
+<!-- Modal de Confirmación para Recomendación con Transición -->
+<transition name="fade">
+  <div v-if="showRecommendationConfirmationModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Cancelación de Recomendación</h5>
+        <button type="button" class="close-button" @click="handleRecommendationModalCancel">&times;</button>
+      </div>
+      <div class="modal-body">
+        {{ recommendationConfirmationMessage }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="handleRecommendationModalCancel">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" @click="handleRecommendationModalConfirm">
+          Sí, cancelar recomendación
+        </button>
+      </div>
+    </div>
+  </div>
+</transition>
+
+  
 </template>
 
 
@@ -357,24 +449,34 @@ export default {
       navbarCollapsed: false,
       dropdownOpen: false,
       searchQuery: '',
-      selectedCompanyName: '', // Para filtrar por empresa
+      selectedCompanyName: '',
       selectedCountry: '',
       selectedDepartment: '',
       selectedCity: '',
       selectedLocality: '',
       selectedNeighborhood: '',
-      showFilters: false, // Mostrar/ocultar filtros
+      showFilters: false, 
       countries: [],
       departments: [],
       cities: [],
       localities: [],
       neighborhoods: [],
-      events: [], // Eventos obtenidos desde el backend
+      events: [], 
       newQuestionText: {},
       isLoading: false,
       errorMessage: '',
-      sortColumn: 'recommendations', // Ordenamiento inicial
-      sortDirection: 'desc', // Dirección de ordenamiento inicial
+      sortColumn: 'eventDate', 
+      sortDirection: 'desc', 
+      confirmationMessage: '',
+      modalResolve: null,
+      showConfirmationModal: false,
+      showNotificationModal: false,
+      notificationMessage: '',
+      notificationTitle: '',
+      notificationType: '', 
+      recommendationConfirmationMessage: '',
+      showRecommendationConfirmationModal: false,
+      recommendationModalResolve: null,
     };
   },
   computed: {
@@ -420,10 +522,11 @@ export default {
         this.sortColumn = column;
         this.sortDirection = 'asc';
       }
+      this.fetchEvents(); // Volver a cargar los eventos con el nuevo ordenamiento
     },
     getSortIcon(column) {
-      if (this.sortColumn !== column) return 'fa-sort';
-      return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+      if (this.sortColumn !== column) return ''; 
+      return this.sortDirection === 'asc' ? 'fa fa-arrow-up' : 'fa fa-arrow-down';
     },
     async fetchEvents() {
       this.isLoading = true;
@@ -439,7 +542,7 @@ export default {
         // Añadir searchQuery si deseas buscar por nombre
         if (this.searchQuery) params.searchQuery = this.searchQuery;
 
-        const response = await eventApiClient.get('');
+        const response = await eventApiClient.get('', { params });
         this.events = response.data;
       } catch (error) {
         console.error('Error al obtener los eventos:', error);
@@ -465,12 +568,132 @@ export default {
       this.neighborhoods = [];
       await this.fetchEvents(); // Obtener todos los eventos sin filtros
     },
+    async toggleApplication(event) {
+      try {
+        if (event.hasApplied) {
+          // Mostrar confirmación antes de cancelar
+          const confirmed = await this.confirmCancellation(event);
+          if (!confirmed) {
+            return; // Si el usuario cancela la acción, no hacemos nada
+          }
+
+          // Cancelar postulación
+          await eventApiClient.delete(`/${event.eventId}/apply`);
+          // Mostrar notificación de éxito
+          this.showNotification('Has cancelado tu postulación.', 'success');
+        } else {
+          // Postularse al evento
+          await eventApiClient.post(`/${event.eventId}/apply`);
+          // Mostrar notificación de éxito
+          this.showNotification('Te has postulado al evento.', 'success');
+        }
+        // Volver a obtener los eventos actualizados
+        await this.fetchEvents();
+      } catch (error) {
+        console.error('Error al procesar la solicitud de postulación:', error);
+        // Mostrar notificación de error
+        this.showNotification('Ocurrió un error al procesar tu solicitud.', 'error');
+      }
+    },
+    confirmCancellation(event) {
+      this.confirmationMessage = `¿Estás seguro que deseas cancelar tu postulación al evento "${event.eventName}"?`;
+      return new Promise((resolve) => {
+        this.modalResolve = resolve;
+        this.showConfirmationModal = true; // Mostrar el modal
+      });
+    },
+    handleModalConfirm() {
+      // El usuario confirmó
+      this.showConfirmationModal = false;
+      if (this.modalResolve) {
+        this.modalResolve(true);
+        this.modalResolve = null;
+      }
+    },
+    handleModalCancel() {
+      // El usuario canceló
+      this.showConfirmationModal = false;
+      if (this.modalResolve) {
+        this.modalResolve(false);
+        this.modalResolve = null;
+      }
+    },
+
+    // Métodos para el modal de notificación
+    showNotification(message, type = 'success', title = '') {
+      this.notificationMessage = message;
+      this.notificationType = type;
+      this.notificationTitle = title || (type === 'success' ? 'Éxito' : 'Información');
+      this.showNotificationModal = true;
+    },
+    closeNotificationModal() {
+      this.showNotificationModal = false;
+      this.notificationMessage = '';
+      this.notificationTitle = '';
+      this.notificationType = '';
+    },
+
+    async toggleRecommendation(event) {
+    try {
+      if (event.hasRecommended) {
+        // Mostrar confirmación antes de cancelar
+        const confirmed = await this.confirmRecommendationCancellation(event);
+        if (!confirmed) {
+          return; // Si el usuario cancela la acción, no hacemos nada
+        }
+
+        // Cancelar recomendación
+        await eventApiClient.delete(`/${event.eventId}/recommend`);
+        // Mostrar notificación de éxito
+        this.showNotification('Has cancelado tu recomendación.', 'success');
+      } else {
+        // Recomendar el evento
+        await eventApiClient.post(`/${event.eventId}/recommend`);
+        // Mostrar notificación de éxito
+        this.showNotification('Has recomendado el evento.', 'success');
+      }
+      // Volver a obtener los eventos actualizados
+      await this.fetchEvents();
+    } catch (error) {
+      console.error('Error al procesar la recomendación:', error);
+      // Mostrar notificación de error
+      this.showNotification('Ocurrió un error al procesar tu solicitud.', 'error');
+    }
+  },
+
+  confirmRecommendationCancellation(event) {
+    this.recommendationConfirmationMessage = `¿Estás seguro que deseas cancelar tu recomendación al evento "${event.eventName}"?`;
+    return new Promise((resolve) => {
+      this.recommendationModalResolve = resolve;
+      this.showRecommendationConfirmationModal = true; // Mostrar el modal
+    });
+  },
+
+  handleRecommendationModalConfirm() {
+    // El usuario confirmó
+    this.showRecommendationConfirmationModal = false;
+    if (this.recommendationModalResolve) {
+      this.recommendationModalResolve(true);
+      this.recommendationModalResolve = null;
+    }
+  },
+
+  handleRecommendationModalCancel() {
+    // El usuario canceló
+    this.showRecommendationConfirmationModal = false;
+    if (this.recommendationModalResolve) {
+      this.recommendationModalResolve(false);
+      this.recommendationModalResolve = null;
+    }
+  },
+
+    // Métodos adicionales
     joinEvent(event) {
-      alert(`Te has unido al evento: ${event.eventName}`);
+      this.showNotification(`Te has unido al evento: ${event.eventName}`, 'success');
       // Aquí puedes agregar la lógica para unirse al evento
     },
     recommendEvent(event) {
-      alert(`Has recomendado el evento: ${event.eventName}`);
+      this.showNotification(`Has recomendado el evento: ${event.eventName}`, 'success');
       // Lógica para manejar recomendaciones
     },
     addQuestion(event) {
@@ -651,7 +874,6 @@ export default {
 
 
 <style scoped>
-
 /* Estilos personalizados */
 #app-container {
   display: flex;
@@ -740,7 +962,7 @@ export default {
   top: 0;
   right: 0;
   height: 100%;
-  width: 300px;
+  width: 350px;
   z-index: 1050;
   overflow-y: auto;
   background-color: #f8f9fa;
@@ -848,18 +1070,19 @@ export default {
 
 /* Botones */
 .btn {
-  background-color: #2fb13a;
-  color: #fff;
-  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
   cursor: pointer;
+  border: none;
 }
 
 .btn:hover {
-  background-color: #279c33;
+  opacity: 0.9;
 }
 
 .btn-secondary {
   background-color: #6c757d;
+  color: #fff;
 }
 
 .btn-secondary:hover {
@@ -868,15 +1091,26 @@ export default {
 
 .btn-primary {
   background-color: #007bff;
+  color: #fff;
 }
 
 .btn-primary:hover {
   background-color: #0069d9;
 }
 
+.btn-danger {
+  background-color: #007bff; /* Cambiado de rojo a azul para mantener coherencia */
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #0056b3; /* Tono más oscuro de azul */
+}
+
 .btn-info {
   background-color: #17a2b8;
   border-color: #17a2b8;
+  color: #fff;
 }
 
 .btn-info:hover {
@@ -926,5 +1160,121 @@ export default {
     width: 80%;
   }
 }
-</style>
 
+/* Botón de cierre dentro del panel de filtros */
+.filter-panel .btn-close {
+  font-size: 1.5rem;
+  border: none;
+  background: transparent;
+}
+
+/* Ajuste para el botón de cancelar */
+.filter-panel .btn-secondary {
+  background-color: #6c757d;
+}
+
+.filter-panel .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* Asegurar que los botones estén espaciados correctamente */
+.filter-panel .d-flex.justify-content-between {
+  gap: 1rem;
+}
+
+/* Ajustes para dispositivos móviles si es necesario */
+@media (max-width: 991.98px) {
+  .filter-panel {
+    width: 80%;
+  }
+
+  /* Ajustar posición del botón de cierre en móviles */
+  .filter-panel .btn-close {
+    font-size: 1.2rem;
+  }
+}
+
+/* Estilos para el Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-container {
+  background-color: #fff;
+  border-radius: 5px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Estilos para el Modal de Notificación */
+.modal-header .text-success {
+  color: #28a745; /* Verde para éxito */
+}
+
+.modal-header .text-primary {
+  color: #007bff; /* Azul para información/error */
+}
+
+.modal-footer .btn-primary {
+  background-color: #007bff; /* Azul estándar */
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #0069d9;
+}
+
+/* Animación "fade" para los modales */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active for <2.1.8 */ {
+  opacity: 0;
+}
+
+/* Animación "fadeIn" para la modal-container */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>
