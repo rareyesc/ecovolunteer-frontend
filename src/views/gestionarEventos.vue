@@ -1,714 +1,206 @@
 <template>
-    <div id="app-container">
-      <!-- Sidebar -->
-      <nav
-        id="sidebar"
-        :class="{ collapsed: isSidebarCollapsed }"
-        class="bg-white"
-      >
-        <div
-          class="d-flex align-items-center justify-content-between p-3 border-bottom border-end-0"
-        >
-          <router-link class="navbar-brand d-flex align-items-center" to="/indexCompany">
-            <img
-              class="img-icon"
-              src="../assets/images/icono-ecovolunteer_48x48.png"
-              alt="Ecovolunteer Logo"
-            />
-            <h4 class="ms-2 mb-0" v-if="!isSidebarCollapsed">Ecovolunteer</h4>
-          </router-link>
-          <!-- Botón para colapsar el sidebar en dispositivos móviles -->
-          <button
-            class="btn btn-light d-lg-none"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu"
-            aria-controls="sidebarMenu"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-        <div class="collapse d-lg-block" id="sidebarMenu">
-          <ul class="nav nav-pills flex-column p-2">
-            <li class="nav-item">
-              <a class="nav-link disabled" tabindex="-1">
-                <span class="item-name">Home</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <router-link
-                class="nav-link"
-                to="/indexCompany"
-                exact
-              >
-                <i class="bi bi-speedometer2 me-3"></i>
-                <span class="item-name">Dashboard</span>
-              </router-link>
-            </li>
-            <li>
-              <hr />
-            </li>
-            <!-- Menú desplegable para Eventos -->
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="#eventosSubmenu"
-                data-bs-toggle="collapse"
-                :aria-expanded="isEventosActive"
-              >
-                <i class="bi bi-calendar-event me-3"></i>
-                <span class="item-name">Eventos</span>
-              </a>
-              <ul
-                class="collapse list-unstyled ps-3"
-                id="eventosSubmenu"
-                :class="{ show: isEventosActive }"
-              >
-                <li class="nav-item">
-                  <router-link
-                    class="nav-link"
-                    to="/misEventosCompany"
-                    exact
-                  >
-                    Mis Eventos
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link
-                    class="nav-link"
-                    to="/gestionarEventos"
-                    exact
-                  >
-                    Gestionar Eventos
-                  </router-link>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-  
-      <!-- Main Content -->
-      <div id="main-content">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light h-62 fixed-top" id="main-navbar">
-          <div class="container-fluid">
-            <!-- Botón para colapsar el navbar en dispositivos móviles -->
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarContent"
-              aria-controls="navbarContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Contenido del navbar -->
-            <div class="collapse navbar-collapse" id="navbarContent">
-              <ul
-                class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0"
-              >
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle d-flex align-items-center"
-                    href="#"
-                    id="navbarDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <img
-                      src="../assets/images/avatars/01.png"
-                      alt="User-Profile"
-                      class="rounded-circle img-avatar"
-                    />
-                    <div class="ms-2 d-none d-md-block">
-                      <h6 class="mb-0">Ruben Reyes</h6>
-                    </div>
-                  </a>
-                  <ul
-                    class="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="navbarDropdown"
-                  >
-                    <li><a class="dropdown-item" href="#">Perfil</a></li>
-                    <li>
-                      <a class="dropdown-item" href="#">Configuración Privada</a>
-                    </li>
-                    <li><hr class="dropdown-divider" /></li>
-                  <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
-                   
-                  </ul>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-  
-        <!-- Contenido Principal -->
-        <div id="content-area">
-          <!-- Header -->
-          <div class="header-image">
-            <div class="position-relative">
-              <!-- Imagen del header -->
-              <img
-                src="../assets/images/dashboard/top-header-1600x250.png"
-                alt="header"
-                class="img-fluid img-header rounded-bottom-4 w-100 animated-scale"
-              />
-              <!-- Texto sobre la imagen -->
-              <div
-                class="position-absolute top-50 translate-middle text-white ms-6"
-              >
-                <h1>{{ titulo }}</h1>
-                <p>{{ descripcion }}</p>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Contenido principal -->
-          <div class="container-fluid mt-3">
-            <div class="row justify-content-center">
-              <div class="col-md-12">
-                <div class="card shadow-sm border-0 rounded">
-                  <div class="card-body scrollable-card-body">
-                      <!-- Botones -->
-                      <div class="row">
-                        <div class="col-md-6 mb-3">
-                          <button class="btn btn-warning w-100" @click="mostrarFormulario('lugar')">
-                            <i class="bi bi-geo-alt me-2"></i> Agregar Lugar
-                          </button>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                          <button class="btn btn-purple w-100" @click="mostrarFormulario('evento')">
-                            <i class="bi bi-calendar-plus me-2"></i> Crear Evento
-                          </button>
-                        </div>
-                      </div>
-                      <hr />
-                    
-                      <!-- Barra de Filtrado -->
-                      <div class="filter-bar mb-4" v-if="!formularioVisible">
-                        <h5>Filtrar Lugares</h5>
-                        <div class="row">
-                          <!-- País -->
-                          <div class="col-md-2 mb-3">
-                            <label for="filtroPais" class="form-label">País</label>
-                            <select
-                              id="filtroPais"
-                              class="form-select"
-                              v-model.number="filtros.pais"
-                              @change="cargarDepartamentosFiltrados"
-                            >
-                              <option value="">Todos los Países</option>
-                              <option 
-                                v-for="pais in paises"
-                                :key="pais.countryId"
-                                :value="pais.countryId"
-                              >
-                                {{ pais.countryName }}
-                              </option>
-                            </select>
-                          </div>
-                          <!-- Departamento -->
-                          <div class="col-md-2 mb-3">
-                            <label for="filtroDepartamento" class="form-label">Departamento</label>
-                            <select
-                              id="filtroDepartamento"
-                              class="form-select"
-                              v-model.number="filtros.departamento"
-                              :disabled="!departamentosFiltrados.length"
-                              @change="cargarCiudadesFiltradas"
-                            >
-                              <option value="">Todos los Departamentos</option>
-                              <option
-                                v-for="departamento in departamentosFiltrados"
-                                :key="departamento.departmentId"
-                                :value="departamento.departmentId"
-                              >
-                                {{ departamento.departmentName }}
-                              </option>
-                            </select>
-                          </div>
-                          <!-- Ciudad -->
-                          <div class="col-md-2 mb-3">
-                            <label for="filtroCiudad" class="form-label">Ciudad</label>
-                            <select
-                              id="filtroCiudad"
-                              class="form-select"
-                              v-model.number="filtros.ciudad"
-                              :disabled="!ciudadesFiltradas.length"
-                              @change="cargarLocalidadesFiltradas"
-                            >
-                              <option value="">Todas las Ciudades</option>
-                              <option
-                                v-for="ciudad in ciudadesFiltradas"
-                                :key="ciudad.cityId"
-                                :value="ciudad.cityId"
-                              >
-                                {{ ciudad.cityName }}
-                              </option>
-                            </select>
-                          </div>
-                          <!-- Localidad -->
-                          <div class="col-md-2 mb-3">
-                            <label for="filtroLocalidad" class="form-label">Localidad</label>
-                            <select
-                              id="filtroLocalidad"
-                              class="form-select"
-                              v-model.number="filtros.localidad"
-                              :disabled="!localidadesFiltradas.length"
-                              @change="cargarBarriosFiltrados"
-                            >
-                              <option value="">Todas las Localidades</option>
-                              <option
-                                v-for="localidad in localidadesFiltradas"
-                                :key="localidad.localityId"
-                                :value="localidad.localityId"
-                              >
-                                {{ localidad.localityName }}
-                              </option>
-                            </select>
-                          </div>
-                          <!-- Barrio -->
-                          <div class="col-md-2 mb-3">
-                            <label for="filtroBarrio" class="form-label">Barrio</label>
-                            <select
-                              id="filtroBarrio"
-                              class="form-select"
-                              v-model.number="filtros.barrio"
-                              :disabled="!barriosFiltrados.length"
-                            >
-                              <option value="">Todos los Barrios</option>
-                              <option
-                                v-for="barrio in barriosFiltrados"
-                                :key="barrio.neighborhoodId"
-                                :value="barrio.neighborhoodId"
-                              >
-                                {{ barrio.neighborhoodName }}
-                              </option>
-                            </select>
-                          </div>
-                            <!-- Botón para Aplicar Filtros -->
-                            <div class="col-md-1 mb-3 d-flex align-items-end">
-                              <button class="btn btn-primary w-100" @click="aplicarFiltros">
-                                Filtrar
-                              </button>
-                            </div>
-                            <!-- Botón para Limpiar Filtros -->
-                            <div class="col-md-1 mb-3 d-flex align-items-end">
-                              <button class="btn btn-secondary w-100" @click="limpiarFiltros">
-                                Limpiar
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                    <transition name="fade">
-                    <!-- Sección de últimos lugares -->
-                    <div v-if="!formularioVisible" class="mt-2">
-                      <h3>Últimos Lugares Agregados</h3>
-                      <div class="row">
-                        <div
-                          class="col-md-6 mb-4 w-30 mt-2"
-                          v-for="address in lugaresFiltrados"
-                          :key="address.addressId"
-                        >
-                        
-                          <div class="card h-100 text-center justify-content-center">
-                            <!-- Botón de Eliminar -->
-                            <button
-                              class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
-                              @click="eliminarLugar(address.addressId)"
-                              aria-label="Eliminar Lugar">
-                              &times;
-                            </button>
-                            <img
-                              :src="getImageUrl(address.imageUrl)"
-                              class="img-place card-img-top rounded mx-auto d-block mt-4"
-                              alt="Imagen del Lugar"
-                            />
-                            <div class="card-body">
-                              <hr>
-                              <h5 class="card-title">{{ address.city?.cityName }}, {{ address.country?.countryName }}</h5>
-                              <p class="card-text">
-                                <strong>Departamento:</strong> {{ address.department?.departmentName }}<br />
-                                <strong>Localidad:</strong> {{ address.locality?.localityName }}<br />
-                                <strong>Barrio:</strong> {{ address.neighborhood?.neighborhoodName }}<br />
-                                <strong>Dirección:</strong> {{ address.addressLine }}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    </transition>
+  <CompanyLayout
+    :titulo="titulo"
+    :descripcion="descripcion"
+  >
+  <div class="content-wrapper">
+    <div class="container-fluid mt-3">
+      <div class="card shadow-sm border-0 rounded flex-fill d-flex">
+        <div class="card-body scrollable-card-body">
 
-                      <!-- Formulario para Agregar Lugar -->
-                    <transition name="fade">
-                      <div v-if="formularioVisible === 'lugar'">
-                        <h5>Agregar Lugar</h5>
-                        <form @submit.prevent="submitFormularioLugar">
-                          <!-- País -->
-                          <div class="mb-3">
-                            <label for="pais" class="form-label">País</label>
-                            <select
-                              id="pais"
-                              class="form-control"
-                              v-model="formularioLugar.pais"
-                              @change="cargarDepartamentosFormulario">
-                            <option value="">Seleccione un Pais</option>
-                              <option
-                                v-for="pais in paises"
-                                :key="pais.countryId"
-                                :value="pais.countryId"
-                              >
-                                {{ pais.countryName }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormulario.pais }}</small>
-                          </div>
-                          <!-- Departamento -->
-                          <div class="mb-3">
-                            <label for="departamento" class="form-label">Departamento</label>
-                            <select
-                              id="departamento"
-                              class="form-select"
-                              v-model="formularioLugar.departamento"
-                              @change="cargarCiudadesFormulario"
-                            >
-                              <option value="">Seleccione un Departamento</option>
-                              <option
-                                v-for="departamento in departamentos"
-                                :key="departamento.departmentId"
-                                :value="departamento.departmentId"
-                              >
-                                {{ departamento.departmentName }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormulario.departamento }}</small>
-                          </div>
-                          <!-- Ciudad -->
-                          <div class="mb-3">
-                            <label for="ciudad" class="form-label">Ciudad</label>
-                            <select
-                              id="ciudad"
-                              class="form-select"
-                              v-model="formularioLugar.ciudad"
-                              @change="cargarLocalidadesFormulario"
-                            >
-                              <option value="">Seleccione una Ciudad</option>
-                              <option
-                                v-for="ciudad in ciudades"
-                                :key="ciudad.cityId"
-                                :value="ciudad.cityId"
-                              >
-                                {{ ciudad.cityName }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormulario.ciudad }}</small>
-                          </div>
-                          <!-- Localidad -->
-                          <div class="mb-3">
-                            <label for="localidad" class="form-label">Localidad</label>
-                            <select
-                              id="localidad"
-                              class="form-select"
-                              v-model="formularioLugar.localidad"
-                              @change="cargarBarriosFormulario"
-                            >
-                              <option value="">Seleccione una Localidad</option>
-                              <option
-                                v-for="localidad in localidades"
-                                :key="localidad.localityId"
-                                :value="localidad.localityId"
-                              >
-                                {{ localidad.localityName }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormulario.localidad }}</small>
-                          </div>
-                          <!-- Barrio -->
-                          <div class="mb-3">
-                            <label for="barrio" class="form-label">Barrio</label>
-                            <select
-                              id="barrio"
-                              class="form-select"
-                              v-model="formularioLugar.barrio"
-                            >
-                              <option value="">Seleccione un Barrio</option>
-                              <option
-                                v-for="barrio in barrios"
-                                :key="barrio.neighborhoodId"
-                                :value="barrio.neighborhoodId"
-                              >
-                                {{ barrio.neighborhoodName }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormulario.barrio }}</small>
-                          </div>
-                          <!-- Dirección -->
-                          <div class="mb-3">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <input
-                              type="text"
-                              id="direccion"
-                              class="form-control"
-                              v-model="formularioLugar.direccion"
-                              placeholder="Ingrese la dirección"
-                            />
-                          </div>
-                          <small class="text-danger">{{ erroresFormulario.direccion }}</small>
-                          <!-- Imagen -->
-                          <div class="mb-3">
-                            <label for="imagen" class="form-label">Imagen del Lugar</label>
-                            <input
-                              type="file"
-                              id="imagen"
-                              class="form-control"
-                              @change="procesarImagen"
-                            />
-                          </div>
-                          <!-- Botón de Envío -->
-                          <button type="submit" class="btn btn-success">Guardar Lugar</button>
-                        </form>
-                      </div>
-                    </transition>
+          <ActionButtons @mostrarFormulario="mostrarFormulario" />
 
-                    <!-- Formulario para Crear Evento -->
-                    <transition name="fade">
-                      <div v-if="formularioVisible === 'evento'">
-                        <h5>Crear Evento</h5>
-                        <form @submit.prevent="submitFormularioEvento">
-                          <!-- Nombre del Evento -->
-                          <div class="mb-3">
-                            <label for="event_name" class="form-label">Nombre del Evento</label>
-                            <input
-                              type="text"
-                              id="event_name"
-                              class="form-control"
-                              v-model="formularioEvento.event_name"
-                              placeholder="Ingrese el nombre del evento"
-                            />
-                            <small class="text-danger">{{ erroresFormularioEvento.event_name }}</small>
-                          </div>
+          <hr />
 
-                          <!-- Descripción -->
-                          <div class="mb-3">
-                            <label for="description" class="form-label">Descripción</label>
-                            <textarea
-                              id="description"
-                              class="form-control"
-                              v-model="formularioEvento.description"
-                              placeholder="Ingrese la descripción del evento"
-                            ></textarea>
-                            <small class="text-danger">{{ erroresFormularioEvento.description }}</small>
-                          </div>
+          <!-- Barra de filtrado -->
+          <FilterBar
+            v-if="!formularioVisible"
+            :paises="paises"
+            :departamentos="departamentosFiltrados"
+            :ciudades="ciudadesFiltradas"
+            :localidades="localidadesFiltradas"
+            :barrios="barriosFiltrados"
+            :filtros="filtros"
+            @cargarDepartamentos="cargarDepartamentosFiltrados"
+            @cargarCiudades="cargarCiudadesFiltradas"
+            @cargarLocalidades="cargarLocalidadesFiltradas"
+            @cargarBarrios="cargarBarriosFiltrados"
+            @aplicarFiltros="aplicarFiltros"
+            @limpiarFiltros="limpiarFiltros"
+          />
 
-                          <!-- Seleccionar Lugar -->
-                          <div class="mb-3">
-                            <label for="location_id" class="form-label">Lugar</label>
-                            <select
-                              id="location_id"
-                              class="form-select"
-                              v-model.number="formularioEvento.location_id"
-                            >
-                              <option value="">Seleccione un Lugar</option>
-                              <option
-                                v-for="lugar in allLugares"
-                                :key="lugar.addressId"
-                                :value="lugar.addressId"
-                              >
-                                {{ lugar.city?.cityName }}, {{ lugar.country?.countryName }}, {{ lugar.addressLine }}
-                              </option>
-                            </select>
-                            <small class="text-danger">{{ erroresFormularioEvento.location_id }}</small>
-                          </div>
+          <!-- Lista de lugares -->
+          <LugaresList
+            v-if="!formularioVisible"
+            :lugares="lugaresFiltrados"
+            @eliminarLugar="eliminarLugar"
+          />
 
-                          <!-- Seleccionar Fecha -->
-                          <div class="mb-3">
-                            <label for="event_date" class="form-label">Fecha</label>
-                            <datepicker
-                              v-model="formularioEvento.event_date"
-                              :input-class="'form-control'"
-                              :format="'yyyy-MM-dd'"
-                              :monday-first="true"
-                              :auto-close="true"
-                              placeholder="Seleccione la fecha del evento"
-                              :day-class="customDateClass"
-                            ></datepicker>
-                            <small class="text-danger">{{ erroresFormularioEvento.event_date }}</small>
-                          </div>
+          <!-- Formulario para agregar lugar -->
+          <AgregarLugarForm
+            v-if="formularioVisible === 'lugar'"
+            :paises="paises"
+            :departamentos="departamentos"
+            :ciudades="ciudades"
+            :localidades="localidades"
+            :barrios="barrios"
+            :erroresFormulario="erroresFormulario"
+            :formularioLugar="formularioLugar"
+            @cargarDepartamentos="cargarDepartamentosFormulario"
+            @cargarCiudades="cargarCiudadesFormulario"
+            @cargarLocalidades="cargarLocalidadesFormulario"
+            @cargarBarrios="cargarBarriosFormulario"
+            @procesarImagen="procesarImagen"
+            @submitFormularioLugar="submitFormularioLugar"
+          />
 
-                          <!-- Seleccionar Hora -->
-                          <div class="mb-3">
-                            <label for="event_time" class="form-label">Hora</label>
-                            <input
-                              type="time"
-                              id="event_time"
-                              class="form-control"
-                              v-model="formularioEvento.event_time"
-                            />
-                            <small class="text-danger">{{ erroresFormularioEvento.event_time }}</small>
-                          </div>
-
-                          <!-- Voluntarios Requeridos (Opcional) -->
-                          <div class="mb-3">
-                            <label for="required_volunteers" class="form-label">Voluntarios Requeridos</label>
-                            <input
-                              type="number"
-                              id="required_volunteers"
-                              class="form-control"
-                              v-model.number="formularioEvento.required_volunteers"
-                              placeholder="Ingrese el número de voluntarios requeridos"
-                              min="1"
-                            />
-                          </div>
-
-                          <!-- Botón de Envío -->
-                          <button type="submit" class="btn btn-success">Crear Evento</button>
-                        </form>
-                      </div>
-                    </transition>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Footer -->
-          <footer class="bg-light mt-3">
-            <div
-              class="d-flex justify-content-between align-items-center p-3"
-            >
-              <ul class="list-inline mb-0">
-                <li class="list-inline-item">
-                  <a href="#">Políticas de privacidad</a>
-                </li>
-                <li class="list-inline-item"><a href="#">Términos de uso</a></li>
-              </ul>
-              <div>
-                ©{{ currentYear }} Ecovolunteer, Hecho por Ecovolunteer.
-              </div>
-            </div>
-          </footer>
+          <!-- Formulario para crear evento -->
+          <CrearEventoForm
+            v-if="formularioVisible === 'evento'"
+            :lugares="allLugares"
+            :erroresFormularioEvento="erroresFormularioEvento"
+            :formularioEvento="formularioEvento"
+            :festivosColombia2024="festivosColombia2024"
+            @submitFormularioEvento="submitFormularioEvento"
+            @customDateClass="customDateClass"
+          />
         </div>
       </div>
-  
-      <!-- Botón para colapsar el sidebar -->
-      <button
-        class="btn toggle-button"
-        @click="toggleSidebar"
-        aria-label="Toggle sidebar"
-      >
-        <i
-          class="bi"
-          :class="isSidebarCollapsed ? 'bi-arrow-right' : 'bi-arrow-left'"
-          style="color: white; font-size: 1.2rem;"
-        ></i>
-      </button>
     </div>
-  </template>
+  </div>
+  </CompanyLayout>
+
+  <!-- Modal de Confirmación -->
+  <ModalConfirmacion
+    v-if="mostrarModalConfirmacion"
+    :modalId="'modal-confirmacion'"
+    :titulo="confirmacionConfig.titulo"
+    :mensaje="confirmacionConfig.mensaje"
+    :textoCancelar="confirmacionConfig.textoCancelar"
+    :textoConfirmar="confirmacionConfig.textoConfirmar"
+    @confirmado="accionConfirmada"
+    @cancelado="accionCancelada"
+  />
+
+  <ModalMensaje
+    v-if="mostrarModal"
+    :modalId="'modal-mensaje'"
+    :titulo="modalConfig.titulo"
+    :mensaje="modalConfig.mensaje"
+    :botonTexto="modalConfig.botonTexto"
+    :tipo="modalConfig.tipo"
+    @cerrado="mostrarModal = false"
+  />
+
+</template>
   
   <script>
-  import Datepicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-export default {
-  name: 'gestionarEventos',
-  components: {
-    Datepicker,
-  },
-  data() {
-    return {
-      titulo: 'Gestionar Eventos',
-      descripcion: 'Aquí podrás Crear, Modificar y Eliminar tus Eventos',
-      currentYear: new Date().getFullYear(),
-      isSidebarCollapsed: false,
-      formularioVisible: null,
-      paises: [],
-      formularioEvento: {
-        eventName: '',
-        description: '',
-        locationId: '',
-        eventDate: null,
-        eventTime: '',
-        requiredVolunteers: null,
-      },
-      erroresFormularioEvento: {
-        eventName: '',
-        description: '',
-        locationId: '',
-        eventDate: '',
-        eventTime: '',
-        requiredVolunteers: '',
-      },
-      // Lista de lugares para seleccionar en el formulario de eventos
-      lugaresParaEvento: [],
-      // Datos para el formulario de agregar lugar
-      formularioLugar: {
-        pais: '',
-        departamento: '',
-        ciudad: '',
-        localidad: '',
-        barrio: '',
-        direccion: '',
-        imagen: null,
-      },
-      departamentos: [],
-      ciudades: [],
-      localidades: [],
-      barrios: [],
-      erroresFormulario: {
-        pais: '',
-        departamento: '',
-        ciudad: '',
-        localidad: '',
-        barrio: '',
-        direccion: '',
-      },
-      // Datos para los filtros
-      departamentosFiltrados: [],
-      ciudadesFiltradas: [],
-      localidadesFiltradas: [],
-      barriosFiltrados: [],
-      filtros: {
-        pais: '',
-        departamento: '',
-        ciudad: '',
-        localidad: '',
-        barrio: '',
-      },
-      latestAddresses: [],
-      lugaresFiltrados: [],
-      allLugares: [],
-      // Festivos de Colombia para 2024
-      festivosColombia2024: [
-        new Date(2024, 0, 1),
-        new Date(2024, 0, 6),
-        new Date(2024, 2, 19),
-        new Date(2024, 3, 5),
-        new Date(2024, 3, 6),
-        new Date(2024, 4, 1),
-        new Date(2024, 4, 9),
-        new Date(2024, 4, 30),
-        new Date(2024, 5, 6),
-        new Date(2024, 5, 29),
-        new Date(2024, 6, 20),
-        new Date(2024, 7, 7),
-        new Date(2024, 7, 15),
-        new Date(2024, 9, 14),
-        new Date(2024, 10, 4),
-        new Date(2024, 10, 11),
-        new Date(2024, 11, 8),
-        new Date(2024, 11, 25),
-        new Date(2025, 0, 1),
-        new Date(2025, 0, 6),
-      ],
+  import CompanyLayout from '@/layouts/CompanyLayout.vue';
+  import ActionButtons from '@/components/ActionButtons.vue';
+  import FilterBar from '@/components/FilterBar.vue';
+  import LugaresList from '@/components/LugaresList.vue';
+  import AgregarLugarForm from '@/components/AgregarLugarForm.vue';
+  import CrearEventoForm from '@/components/CrearEventoForm.vue';
+  import ModalMensaje from '@/components/modals/ModalMensaje.vue';
+  import ModalConfirmacion from '@/components/modals/ModalConfirmacion.vue';
+
+  export default {
+    name: 'GestionarEventos',
+    components: {
+      CompanyLayout,
+      ActionButtons,
+      FilterBar,
+      LugaresList,
+      AgregarLugarForm,
+      CrearEventoForm,
+      ModalMensaje,
+      ModalConfirmacion,
+    },
+
+    data() {
+      return {
+        titulo: 'Gestionar Eventos',
+        descripcion: 'Aquí podrás Crear, Modificar y Eliminar tus Eventos',
+        currentYear: new Date().getFullYear(),
+        formularioVisible: null,
+        mostrarModal: false,
+        modalConfig: {
+          titulo: '',
+          mensaje: '',
+          botonTexto: '',
+          botonVariant: '',
+        },
+        mostrarModalConfirmacion: false,
+        confirmacionConfig: {
+          titulo: '',
+          mensaje: '',
+          textoCancelar: '',
+          textoConfirmar: '',
+          accionConfirmar: null,
+        },
+        paises: [],
+        departamentos: [],
+        ciudades: [],
+        localidades: [],
+        barrios: [],
+        departamentosFiltrados: [],
+        ciudadesFiltradas: [],
+        localidadesFiltradas: [],
+        barriosFiltrados: [],
+        filtros: {
+          pais: '',
+          departamento: '',
+          ciudad: '',
+          localidad: '',
+          barrio: '',
+        },
+        latestAddresses: [],
+        lugaresFiltrados: [],
+        allLugares: [],
+        formularioLugar: {
+          pais: '',
+          departamento: '',
+          ciudad: '',
+          localidad: '',
+          barrio: '',
+          direccion: '',
+          imagen: null,
+        },
+        erroresFormulario: {},
+        formularioEvento: {
+          event_name: '',
+          description: '',
+          location_id: '',
+          event_date: null,
+          event_time: '',
+          required_volunteers: null,
+        },
+        erroresFormularioEvento: {},
+        festivosColombia2024: [
+          new Date(2024, 0, 1),
+          new Date(2024, 0, 6),
+          new Date(2024, 2, 19),
+          new Date(2024, 3, 5),
+          new Date(2024, 3, 6),
+          new Date(2024, 4, 1),
+          new Date(2024, 4, 9),
+          new Date(2024, 4, 30),
+          new Date(2024, 5, 6),
+          new Date(2024, 5, 29),
+          new Date(2024, 6, 20),
+          new Date(2024, 7, 7),
+          new Date(2024, 7, 15),
+          new Date(2024, 9, 14),
+          new Date(2024, 10, 4),
+          new Date(2024, 10, 11),
+          new Date(2024, 11, 8),
+          new Date(2024, 11, 25),
+          new Date(2025, 0, 1),
+          new Date(2025, 0, 6),
+        ],
     };
   },
+
   computed: {
     isEventosActive() {
       return (
@@ -717,6 +209,7 @@ export default {
       );
     },
   },
+
   methods: {
     toggleSidebar() {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -731,7 +224,7 @@ export default {
         })
         .catch(error => {
           console.error('Error al obtener todas las direcciones:', error);
-          alert('No se pudieron cargar los lugares. Por favor, intenta nuevamente.');
+          this.mostrarModalMensaje('No se pudieron cargar los lugares. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
         });
     },
 
@@ -822,7 +315,7 @@ export default {
         })
         .catch(error => {
           console.error('Error al cargar países (Formulario):', error);
-          alert('No se pudieron cargar los países. Por favor, intenta nuevamente.');
+          this.mostrarModalMensaje('No se pudieron cargar los países. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
         });
     },
 
@@ -840,7 +333,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar departamentos (Formulario):', error);
-            alert('No se pudieron cargar los departamentos. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar los departamentos. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             // Limpiar los campos dependientes en caso de error
             this.departamentos = [];
             this.formularioLugar.departamento = '';
@@ -878,7 +371,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar ciudades (Formulario):', error);
-            alert('No se pudieron cargar las ciudades. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar las ciudades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.ciudades = [];
             this.formularioLugar.ciudad = '';
             this.localidades = [];
@@ -910,7 +403,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar localidades (Formulario):', error);
-            alert('No se pudieron cargar las localidades. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar las localidades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.localidades = [];
             this.formularioLugar.localidad = '';
             this.barrios = [];
@@ -938,7 +431,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar barrios (Formulario):', error);
-            alert('No se pudieron cargar los barrios. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar los barrios. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.barrios = [];
             this.formularioLugar.barrio = '';
           });
@@ -971,7 +464,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar departamentos (Filtros):', error);
-            alert('No se pudieron cargar los departamentos. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar los departamentos. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.departamentosFiltrados = [];
             this.filtros.departamento = '';
             this.ciudadesFiltradas = [];
@@ -1015,7 +508,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar ciudades (Filtros):', error);
-            alert('No se pudieron cargar las ciudades. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar las ciudades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.ciudadesFiltradas = [];
             this.filtros.ciudad = '';
             this.localidadesFiltradas = [];
@@ -1052,7 +545,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar localidades (Filtros):', error);
-            alert('No se pudieron cargar las localidades. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar las localidades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.localidadesFiltradas = [];
             this.filtros.localidad = '';
             this.barriosFiltrados = [];
@@ -1081,7 +574,7 @@ export default {
           })
           .catch(error => {
             console.error('Error al cargar barrios (Filtros):', error);
-            alert('No se pudieron cargar los barrios. Por favor, intenta nuevamente.');
+            this.mostrarModalMensaje('No se pudieron cargar los barrios. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
             this.barriosFiltrados = [];
             this.filtros.barrio = '';
           });
@@ -1095,6 +588,22 @@ export default {
     procesarImagen(event) {
       const file = event.target.files[0];
       this.formularioLugar.imagen = file;
+    },
+
+    mostrarModalMensaje(
+      mensaje,
+      titulo = 'Mensaje',
+      botonTexto = 'Cerrar',
+      tipo = 'primary'
+    ) {
+      console.log('Mostrar modal con mensaje:', mensaje);
+      this.modalConfig = {
+        titulo,
+        mensaje,
+        botonTexto,
+        tipo,
+      };
+      this.mostrarModal = true;
     },
 
     // Métodos para el formulario de agregar lugar
@@ -1182,7 +691,7 @@ export default {
           }
         })
         .then(newAddress => {
-          alert('Lugar guardado exitosamente.');
+          this.mostrarModalMensaje('Lugar guardado exitosamente.', 'Éxito', 'Aceptar', 'success');
           // Limpiar y ocultar el formulario
           this.resetFormularioLugar();
           this.formularioVisible = null;
@@ -1197,7 +706,7 @@ export default {
         })
         .catch(error => {
           console.error('Error al guardar el lugar:', error);
-          alert(error.message);
+          this.mostrarModalMensaje(error.message, 'Error', 'Cerrar', 'danger');
         });
     },
 
@@ -1287,20 +796,20 @@ export default {
 
         // eslint-disable-next-line no-unused-vars
         const data = await response.json();
-        alert('Evento creado exitosamente.');
+        this.mostrarModalMensaje('Evento creado exitosamente.', 'Éxito', 'Aceptar', 'success');
         this.resetFormularioEvento();
         this.fetchLatestAddresses();
         this.fetchAllAddresses();
       } catch (error) {
         console.error('Error al crear el evento:', error);
-        alert(error.message);
+        this.mostrarModalMensaje(error.message, 'Error', 'Cerrar', 'danger');
       }
     },
 
     handleResponse(response) {
       if (response.status === 401) {
         // Token expirado o no autorizado
-        alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        this.mostrarModalMensaje('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'Sesión Expirada', 'Aceptar', 'warning');
         // Limpiar el token del almacenamiento
         sessionStorage.removeItem('jwt_token');
         // Redirigir a la página de login
@@ -1329,10 +838,38 @@ export default {
     },
 
     eliminarLugar(addressId) {
-      if (!confirm('¿Estás seguro de que deseas eliminar este lugar? Esta acción no se puede deshacer.')) {
-        return;
-      }
+      this.solicitarConfirmacion(
+        '¿Estás seguro de que deseas eliminar este lugar? Esta acción no se puede deshacer.',
+        'Eliminar Lugar',
+        'Cancelar',
+        'Eliminar',
+        () => this.procederEliminarLugar(addressId)
+      );
+    },
 
+    solicitarConfirmacion(mensaje, titulo, textoCancelar, textoConfirmar, accionConfirmar) {
+      this.confirmacionConfig = {
+        titulo,
+        mensaje,
+        textoCancelar,
+        textoConfirmar,
+        accionConfirmar,
+      };
+      this.mostrarModalConfirmacion = true;
+    },
+
+    accionConfirmada() {
+      if (this.confirmacionConfig.accionConfirmar) {
+        this.confirmacionConfig.accionConfirmar();
+      }
+      this.mostrarModalConfirmacion = false;
+    },
+
+    accionCancelada() {
+      this.mostrarModalConfirmacion = false;
+    },
+
+    procederEliminarLugar(addressId) {
       // Obtener el token del almacenamiento local
       const token = sessionStorage.getItem('jwt_token');
 
@@ -1345,7 +882,7 @@ export default {
         .then(this.handleResponse)
         .then(response => {
           if (response.ok) {
-            alert('Lugar eliminado exitosamente.');
+            this.mostrarModalMensaje('Lugar eliminado exitosamente.', 'Éxito', 'Aceptar', 'success');
             // Actualizar la lista de lugares eliminando el eliminado
             this.latestAddresses = this.latestAddresses.filter(address => address.addressId !== addressId);
             this.lugaresFiltrados = this.lugaresFiltrados.filter(address => address.addressId !== addressId);
@@ -1357,7 +894,7 @@ export default {
         })
         .catch(error => {
           console.error('Error al eliminar el lugar:', error);
-          alert(error.message);
+          this.mostrarModalMensaje(error.message, 'Error', 'Cerrar', 'danger');
         });
     },
 
@@ -1396,4 +933,4 @@ export default {
     this.fetchAllAddresses();
   },
 };
-</script>  
+</script>

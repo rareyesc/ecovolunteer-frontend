@@ -35,7 +35,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* Estilos globales, si es necesario */
-</style>

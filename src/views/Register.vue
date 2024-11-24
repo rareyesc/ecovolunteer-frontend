@@ -38,99 +38,151 @@
                       <!-- Formulario para Voluntario -->
                       <template v-if="userType === 'volunteer'">
                         <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="firstName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="firstName" v-model="user.firstName" :class="{'is-invalid': errors.firstName}" placeholder="Ingrese su nombre" required>
-                            <div v-if="errors.firstName" class="invalid-feedback">{{ errors.firstName }}</div>
-                          </div>
+                          <InputField
+                            label="Nombre"
+                            type="text"
+                            id="firstName"
+                            v-model="user.firstName"
+                            placeholder="Ingrese su nombre"
+                            :errorMessage="errors.firstName"
+                          />
                         </div>
                         <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="lastName" class="form-label">Apellido</label>
-                            <input type="text" class="form-control" id="lastName" v-model="user.lastName" :class="{'is-invalid': errors.lastName}" placeholder="Ingrese su apellido" required>
-                            <div v-if="errors.lastName" class="invalid-feedback">{{ errors.lastName }}</div>
-                          </div>
+                          <InputField
+                            label="Apellido"
+                            type="text"
+                            id="lastName"
+                            v-model="user.lastName"
+                            placeholder="Ingrese su apellido"
+                            :errorMessage="errors.lastName"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="cedula" class="form-label">Cédula</label>
-                            <input type="number" class="form-control" id="cedula" v-model="user.cedula" :class="{'is-invalid': errors.cedula}" placeholder="Ingrese su cedula" required>
-                            <div v-if="errors.cedula" class="invalid-feedback">{{ errors.cedula }}</div>
-                          </div>
+                          <InputField
+                            label="Cédula"
+                            type="number"
+                            id="cedula"
+                            v-model="user.cedula"
+                            placeholder="Ingrese su cédula"
+                            :errorMessage="errors.cedula"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email" v-model="user.email" :class="{'is-invalid': errors.email}" placeholder="Ingrese su email" required>
-                            <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
-                          </div>
+                          <InputField
+                            label="Correo Electrónico"
+                            type="email"
+                            id="email"
+                            v-model="user.email"
+                            placeholder="Ingrese su email"
+                            :errorMessage="errors.email"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="phoneNumber" class="form-label">Número de Teléfono</label>
-                            <input type="number" class="form-control" id="phoneNumber" v-model="user.phoneNumber" placeholder="Ingrese su numero telefonico" required>
-                          </div>
+                          <InputField
+                            label="Número de Teléfono"
+                            type="number"
+                            id="phoneNumber"
+                            v-model="user.phoneNumber"
+                            placeholder="Ingrese su número telefónico"
+                            :errorMessage="errors.phoneNumber"
+                          />
                         </div>
                         <div class="col-lg-6 pt-3">
-                          <div class="form-group">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" v-model="password" :class="passwordClass" placeholder="Ingrese su password" required>
-                            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
-                          </div>
+                          <InputField
+                            label="Contraseña"
+                            type="password"
+                            id="password"
+                            v-model="user.password"
+                            placeholder="Ingrese su contraseña"
+                            :errorMessage="errors.password"
+                            :customClass="passwordClass"
+                          />
                         </div>
                         <div class="col-lg-6 pt-3">
-                          <div class="form-group">
-                            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" :class="confirmPasswordClass" placeholder="Repetir password" required>
-                            <div v-if="errors.confirmPassword" class="text-danger">{{ errors.confirmPassword }}</div>
-                          </div>
+                          <InputField
+                            label="Confirmar Contraseña"
+                            type="password"
+                            id="confirmPassword"
+                            v-model="user.confirmPassword"
+                            placeholder="Repetir contraseña"
+                            :errorMessage="errors.confirmPassword"
+                            :customClass="confirmPasswordClass"
+                          />
                         </div>
                       </template>
                       <!-- Formulario para Compañía -->
                       <template v-else>
                         <div class="col-lg-12">
-                          <div class="form-group">
-                            <label for="companyName" class="form-label">Nombre de la Compañía</label>
-                            <input type="text" class="form-control" id="companyName" v-model="company.companyName" placeholder="Ingrese el nombre de la compañía" required>
-                          </div>
+                          <InputField
+                            label="Nombre de la Compañía"
+                            type="text"
+                            id="companyName"
+                            v-model="company.companyName"
+                            placeholder="Ingrese el nombre de la compañía"
+                            :errorMessage="errors.companyName"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="nit" class="form-label">NIT</label>
-                            <input type="text" class="form-control" id="nit" v-model="company.nit" placeholder="Ingrese el NIT de la compañía" required>
-                          </div>
+                          <InputField
+                            label="NIT"
+                            type="text"
+                            id="nit"
+                            v-model="company.nit"
+                            placeholder="Ingrese el NIT de la compañía"
+                            :errorMessage="errors.nit"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="address" class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="address" v-model="company.address" placeholder="Ingrese la dirección de la compañía" required>
-                          </div>
+                          <InputField
+                            label="Dirección"
+                            type="text"
+                            id="address"
+                            v-model="company.address"
+                            placeholder="Ingrese la dirección de la compañía"
+                            :errorMessage="errors.address"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="emailCompany" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="emailCompany" v-model="company.email" placeholder="Ingrese el email de la compañía" required>
-                          </div>
+                          <InputField
+                            label="Correo Electrónico"
+                            type="email"
+                            id="emailCompany"
+                            v-model="company.email"
+                            placeholder="Ingrese el email de la compañía"
+                            :errorMessage="errors.email"
+                          />
                         </div>
                         <div class="col-lg-12 pt-3">
-                          <div class="form-group">
-                            <label for="phoneNumberCompany" class="form-label">Número de Teléfono</label>
-                            <input type="text" class="form-control" id="phoneNumberCompany" v-model="company.phoneNumber" placeholder="Ingrese el telefono de la compañía" required>
-                          </div>
+                          <InputField
+                            label="Número de Teléfono"
+                            type="text"
+                            id="phoneNumberCompany"
+                            v-model="company.phoneNumber"
+                            placeholder="Ingrese el teléfono de la compañía"
+                            :errorMessage="errors.phoneNumber"
+                          />
                         </div>
                         <div class="col-lg-6 pt-3">
-                          <div class="form-group">
-                            <label for="passwordCompany" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="passwordCompany" v-model="password" :class="passwordClass" placeholder="Ingrese el password" required>
-                            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
-                          </div>
+                          <InputField
+                            label="Contraseña"
+                            type="password"
+                            id="passwordCompany"
+                            v-model="company.password"
+                            placeholder="Ingrese la contraseña"
+                            :errorMessage="errors.password"
+                            :customClass="passwordClass"
+                          />
                         </div>
                         <div class="col-lg-6 pt-3">
-                          <div class="form-group">
-                            <label for="confirmPasswordCompany" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" id="confirmPasswordCompany" v-model="confirmPassword" :class="confirmPasswordClass" placeholder="Repetir password" required>
-                            <div v-if="errors.confirmPassword" class="text-danger">{{ errors.confirmPassword }}</div>
-                          </div>
+                          <InputField
+                            label="Confirmar Contraseña"
+                            type="password"
+                            id="confirmPasswordCompany"
+                            v-model="company.confirmPassword"
+                            placeholder="Repetir contraseña"
+                            :errorMessage="errors.confirmPassword"
+                            :customClass="confirmPasswordClass"
+                          />
                         </div>
                       </template>
                       <!-- Términos y Condiciones -->
@@ -138,6 +190,7 @@
                         <div class="form-check mb-3">
                           <input type="checkbox" class="form-check-input" id="termsCheck" v-model="termsAccepted" required>
                           <label class="form-check-label" for="termsCheck">Acepto los términos y condiciones</label>
+                          <div v-if="errors.termsAccepted" class="text-danger">{{ errors.termsAccepted }}</div>
                         </div>
                       </div>
                     </div>
@@ -161,53 +214,30 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> 
     </section>
   </div>
-  <!-- Modal de Errores -->
-  <div class="modal fade" tabindex="-1" ref="errorModal" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog mt-5">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Errores en el formulario</h5>
-          <button type="button" class="btn-close" @click="closeErrorsModal"></button>
-        </div>
-        <div class="modal-body">
-          <ul>
-            <li v-for="(error, field) in errors" :key="field">{{ error }}</li>
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeErrorsModal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Éxito -->
-  <div class="modal fade" tabindex="-1" ref="successModal" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog mt-5">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">¡Registro Exitoso!</h5>
-          <button type="button" class="btn-close" @click="closeSuccessModal"></button>
-        </div>
-        <div class="modal-body">
-          <p>Tu cuenta ha sido creada exitosamente.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" @click="redirectToLogin">Aceptar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Modales -->
+  <SuccessModal ref="successModal" />
+  <ErrorModal ref="errorModal" :errorMessages="errorMessages" />
 </template>
+
 <script>
-import { userApiClient, companyApiClient } from '@/services/api';
+import InputField from '@/components/auth/InputField.vue';
+import SuccessModal from '@/components/modals/SuccessModal.vue';
+import ErrorModal from '@/components/modals/ErrorModal.vue';
+import { validateName, validateEmail, validatePassword, validateCedula, validatePhoneNumber } from '@/utils/validationUtils';
+import { registerUser } from '@/services/auth/userService';
+import { registerCompany } from '@/services/auth/companyService';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Register',
+  components: {
+    InputField,
+    SuccessModal,
+    ErrorModal,
+  },
   data() {
     return {
       userType: 'volunteer',
@@ -233,21 +263,11 @@ export default {
       errorMessage: '',
       successMessage: '',
       errors: {},
-      errorModalInstance: null,
-      successModalInstance: null,
+      errorMessages: [],
     };
-  },
-  watch: {
-    password() {
-      this.validatePasswordRealTime();
-    },
-    confirmPassword() {
-      this.validatePasswordRealTime();
-    },
   },
   methods: {
     selectUserType(type) {
-      console.log("Tipo seleccionado:", type);
       this.userType = type;
       this.resetForm();
     },
@@ -256,6 +276,7 @@ export default {
       this.successMessage = '';
       this.termsAccepted = false;
       this.errors = {};
+      this.errorMessages = [];
       if (this.userType === 'volunteer') {
         this.user = {
           firstName: '',
@@ -287,7 +308,8 @@ export default {
             key !== 'password' &&
             key !== 'confirmPassword' &&
             key !== 'cedula' &&
-            key !== 'phoneNumber') {
+            key !== 'phoneNumber' &&
+            key !== 'nit') {
             newObj[key] = value.toLowerCase();
           } else {
             newObj[key] = value;
@@ -300,55 +322,51 @@ export default {
       this.errorMessage = '';
       this.successMessage = '';
       this.errors = {};
+      this.errorMessages = [];
 
       if (!this.validateForm()) {
-        this.showErrorsModal();
+        this.$refs.errorModal.showModal();
         return;
       }
 
       try {
         if (this.userType === 'volunteer') {
           const userData = this.convertToLowerCase(this.user);
-          await userApiClient.post('/users/register', userData);
+          await registerUser(userData);
         } else if (this.userType === 'company') {
           const companyData = this.convertToLowerCase(this.company);
-          await companyApiClient.post('/companies/register', companyData);
+          await registerCompany(companyData);
         }
-        this.showSuccessModal();
+        this.$refs.successModal.showModal();
         this.resetForm();
       } catch (error) {
         this.handleError(error);
-        this.showErrorsModal();
+        this.$refs.errorModal.showModal();
       }
     },
     handleError(error) {
       this.errors = {};
       this.errorMessage = '';
+      this.errorMessages = [];
 
       if (error.response) {
+        const status = error.response.status;
         const errorData = error.response.data;
-        if (typeof errorData === 'string') {
+
+        if (status === 409) {
           this.errorMessage = errorData;
-        } else if (typeof errorData === 'object') {
+          this.errorMessages.push(errorData);
+        } else if (status === 400 && typeof errorData === 'object') {
           this.errors = errorData;
+          this.errorMessages = Object.values(errorData);
         } else {
           this.errorMessage = 'Ocurrió un error inesperado.';
+          this.errorMessages.push(this.errorMessage);
         }
       } else {
         this.errorMessage = 'Error al conectar con el servidor.';
+        this.errorMessages.push(this.errorMessage);
       }
-    },
-    validateName(name) {
-      const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-      return regex.test(name);
-    },
-    validateEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    },
-    validatePassword(password) {
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
-      return regex.test(password);
     },
     validateForm() {
       this.errors = {};
@@ -356,35 +374,35 @@ export default {
       if (this.userType === 'volunteer') {
         if (!this.user.firstName) {
           this.errors.firstName = 'El nombre es obligatorio.';
-        } else if (!this.validateName(this.user.firstName)) {
+        } else if (!validateName(this.user.firstName)) {
           this.errors.firstName = 'El nombre solo debe contener letras.';
         }
 
         if (!this.user.lastName) {
           this.errors.lastName = 'El apellido es obligatorio.';
-        } else if (!this.validateName(this.user.lastName)) {
+        } else if (!validateName(this.user.lastName)) {
           this.errors.lastName = 'El apellido solo debe contener letras.';
         }
 
         if (!this.user.cedula) {
           this.errors.cedula = 'La cédula es obligatoria.';
-        } else if (!/^\d+$/.test(this.user.cedula)) {
+        } else if (!validateCedula(this.user.cedula)) {
           this.errors.cedula = 'La cédula debe contener solo números.';
         }
 
-        if (this.user.phoneNumber && !/^\d{7,10}$/.test(this.user.phoneNumber)) {
+        if (this.user.phoneNumber && !validatePhoneNumber(this.user.phoneNumber)) {
           this.errors.phoneNumber = 'El número de teléfono no es válido.';
         }
 
         if (!this.user.email) {
           this.errors.email = 'El correo electrónico es obligatorio.';
-        } else if (!this.validateEmail(this.user.email)) {
+        } else if (!validateEmail(this.user.email)) {
           this.errors.email = 'El correo electrónico no es válido.';
         }
 
         if (!this.user.password) {
           this.errors.password = 'La contraseña es obligatoria.';
-        } else if (!this.validatePassword(this.user.password)) {
+        } else if (!validatePassword(this.user.password)) {
           this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
         }
 
@@ -398,23 +416,27 @@ export default {
 
         if (!this.company.nit) {
           this.errors.nit = 'El NIT es obligatorio.';
-        } else if (!/^\d+$/.test(this.company.nit)) {
+        } else if (!validateCedula(this.company.nit)) {
           this.errors.nit = 'El NIT debe contener solo números.';
         }
 
-        if (this.company.phoneNumber && !/^\d{7,10}$/.test(this.company.phoneNumber)) {
+        if (!this.company.address) {
+          this.errors.address = 'La dirección es obligatoria.';
+        }
+
+        if (this.company.phoneNumber && !validatePhoneNumber(this.company.phoneNumber)) {
           this.errors.phoneNumber = 'El número de teléfono no es válido.';
         }
 
         if (!this.company.email) {
           this.errors.email = 'El correo electrónico es obligatorio.';
-        } else if (!this.validateEmail(this.company.email)) {
+        } else if (!validateEmail(this.company.email)) {
           this.errors.email = 'El correo electrónico no es válido.';
         }
 
         if (!this.company.password) {
           this.errors.password = 'La contraseña es obligatoria.';
-        } else if (!this.validatePassword(this.company.password)) {
+        } else if (!validatePassword(this.company.password)) {
           this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
         }
 
@@ -425,86 +447,60 @@ export default {
       if (!this.termsAccepted) {
         this.errors.termsAccepted = 'Debes aceptar los términos y condiciones.';
       }
+      // Actualizar el array de mensajes de error
+      this.errorMessages = Object.values(this.errors);
+
       return Object.keys(this.errors).length === 0;
     },
-    showErrorsModal() {
-      if (!this.errorModalInstance) {
-        this.errorModalInstance = new window.bootstrap.Modal(this.$refs.errorModal);
-      }
-      this.errorModalInstance.show();
-    },
-    closeErrorsModal() {
-      if (this.errorModalInstance) {
-        this.errorModalInstance.hide();
-      }
-    },
-    showSuccessModal() {
-      if (!this.successModalInstance) {
-        this.successModalInstance = new window.bootstrap.Modal(this.$refs.successModal);
-      }
-      this.successModalInstance.show();
-    },
-    closeSuccessModal() {
-      if (this.successModalInstance) {
-        this.successModalInstance.hide();
-      }
-    },
-    redirectToLogin() {
-      this.closeSuccessModal();
-      this.$router.push('/login');
-    },
     validatePasswordRealTime() {
-      if (this.password && !this.validatePassword(this.password)) {
-        this.errors.password = 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
+      const password =
+        this.userType === 'volunteer' ? this.user.password : this.company.password;
+      const confirmPassword =
+        this.userType === 'volunteer' ? this.user.confirmPassword : this.company.confirmPassword;
+
+      if (password && !validatePassword(password)) {
+        this.errors.password =
+          'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter especial.';
       } else {
         delete this.errors.password;
       }
 
-      if (this.confirmPassword && this.password !== this.confirmPassword) {
+      if (confirmPassword && password !== confirmPassword) {
         this.errors.confirmPassword = 'Las contraseñas no coinciden.';
       } else {
         delete this.errors.confirmPassword;
       }
+
+      // Actualizar el array de mensajes de error
+      this.errorMessages = Object.values(this.errors);
     },
   },
+  watch: {
+    'user.password': 'validatePasswordRealTime',
+    'user.confirmPassword': 'validatePasswordRealTime',
+    'company.password': 'validatePasswordRealTime',
+    'company.confirmPassword': 'validatePasswordRealTime',
+  },
   computed: {
-    password: {
-      get() {
-        return this.userType === 'volunteer' ? this.user.password : this.company.password;
-      },
-      set(value) {
-        if (this.userType === 'volunteer') {
-          this.user.password = value;
-        } else {
-          this.company.password = value;
-        }
-      },
-    },
-    confirmPassword: {
-      get() {
-        return this.userType === 'volunteer' ? this.user.confirmPassword : this.company.confirmPassword;
-      },
-      set(value) {
-        if (this.userType === 'volunteer') {
-          this.user.confirmPassword = value;
-        } else {
-          this.company.confirmPassword = value;
-        }
-      },
-    },
     passwordClass() {
-      if (this.password === '') {
+      const password =
+        this.userType === 'volunteer' ? this.user.password : this.company.password;
+      if (password === '') {
         return '';
-      } else if (this.validatePassword(this.password)) {
+      } else if (validatePassword(password)) {
         return 'is-valid';
       } else {
         return 'is-invalid';
       }
     },
     confirmPasswordClass() {
-      if (this.confirmPassword === '') {
+      const password =
+        this.userType === 'volunteer' ? this.user.password : this.company.password;
+      const confirmPassword =
+        this.userType === 'volunteer' ? this.user.confirmPassword : this.company.confirmPassword;
+      if (confirmPassword === '') {
         return '';
-      } else if (this.password !== '' && this.password === this.confirmPassword) {
+      } else if (password !== '' && password === confirmPassword) {
         return 'is-valid';
       } else {
         return 'is-invalid';
@@ -513,6 +509,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>

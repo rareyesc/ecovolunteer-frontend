@@ -438,7 +438,7 @@
 
 
 <script>
-import { eventApiClient } from '@/services/api'; // Asegúrate de que la ruta sea correcta
+import { eventApiClient } from '@/services/api';
 
 export default {
   name: 'indexUser',
@@ -870,8 +870,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 /* Estilos personalizados */
