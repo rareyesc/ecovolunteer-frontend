@@ -18,7 +18,7 @@ const companyApiClient = axios.create({
 
 // Cliente para eventos
 const eventApiClient = axios.create({
-  baseURL: 'http://localhost:8093/events', // Asegúrate de que esta URL sea correcta
+  baseURL: 'http://localhost:8093/events',
   headers: {
     'Content-Type': 'application/json',
   },

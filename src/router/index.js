@@ -6,6 +6,7 @@ import IndexAdmin from '@/views/indexAdmin.vue';
 import IndexUser from '@/views/indexUser.vue';
 import gestionarEventos from '@/views/gestionarEventos.vue';
 import misEventosCompany from '@/views/misEventosCompany.vue';
+import misEventosUser from '@/views/misEventosUser.vue';
 
 // Función para decodificar el token JWT y obtener los datos
 function parseJwt(token) {
@@ -63,7 +64,12 @@ const routes = [
     component: misEventosCompany,
     meta: { requiresAuth: true, role: 'Company' },
   },
-  // Ruta para el logout
+  {
+    path: '/misEventosUser',
+    name: 'MisEventosUser',
+    component: misEventosUser,
+    meta: { requiresAuth: true, role: 'Volunteer' },
+  },
   {
     path: '/logout',
     name: 'Logout',

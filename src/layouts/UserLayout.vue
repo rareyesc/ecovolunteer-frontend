@@ -1,3 +1,4 @@
+<!-- src/layouts/UserLayout.vue -->
 <template>
     <div id="app-container">
       <!-- Sidebar -->
@@ -9,10 +10,10 @@
         <div
           class="d-flex align-items-center justify-content-between p-3 border-bottom border-end-0"
         >
-          <router-link class="navbar-brand d-flex align-items-center" to="/indexCompany">
+          <router-link class="navbar-brand d-flex align-items-center" to="/indexUser">
             <img
               class="img-icon"
-              src="../assets/images/icono-ecovolunteer_48x48.png"
+              :src="logoSrc"
               alt="Ecovolunteer Logo"
             />
             <h4 class="ms-2 mb-0" v-if="!isSidebarCollapsed">Ecovolunteer</h4>
@@ -40,52 +41,28 @@
             <li class="nav-item">
               <router-link
                 class="nav-link"
-                to="/indexCompany"
+                to="/indexUser"
                 exact
               >
                 <i class="bi bi-speedometer2 me-3"></i>
-                <span class="item-name">Dashboard</span>
+                <span class="item-name">Inicio</span>
               </router-link>
             </li>
             <li>
               <hr />
             </li>
-            <!-- Menú desplegable para Eventos -->
+            <!-- Menú para Eventos -->
             <li class="nav-item">
-              <a
+              <router-link
                 class="nav-link"
-                href="#eventosSubmenu"
-                data-bs-toggle="collapse"
-                :aria-expanded="isEventosActive"
+                to="/misEventosUser"
+                exact
               >
                 <i class="bi bi-calendar-event me-3"></i>
-                <span class="item-name">Eventos</span>
-              </a>
-              <ul
-                class="collapse list-unstyled ps-3"
-                id="eventosSubmenu"
-                :class="{ show: isEventosActive }"
-              >
-                <li class="nav-item">
-                  <router-link
-                    class="nav-link"
-                    to="/misEventosCompany"
-                    exact
-                  >
-                    Mis Eventos
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link
-                    class="nav-link"
-                    to="/gestionarEventos"
-                    exact
-                  >
-                    Gestionar Eventos
-                  </router-link>
-                </li>
-              </ul>
+                <span class="item-name">Mis Eventos</span>
+              </router-link>
             </li>
+            <!-- Puedes agregar más enlaces si es necesario -->
           </ul>
         </div>
       </nav>
@@ -139,7 +116,7 @@
                       <a class="dropdown-item" href="#">Configuración Privada</a>
                     </li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="logout">Cerrar Sesión</a></li>
                   </ul>
                 </li>
               </ul>
@@ -154,7 +131,7 @@
             <div class="position-relative">
               <!-- Imagen del header -->
               <img
-                src="../assets/images/dashboard/top-header-1600x250.png"
+                :src="headerImageSrc"
                 alt="header"
                 class="img-fluid img-header rounded-bottom-4 w-100 animated-scale"
               />
@@ -168,8 +145,17 @@
             </div>
           </div>
   
-          <!-- Contenido variable -->
-            <slot></slot>
+          <!-- Aquí añadimos la estructura de la tarjeta -->
+          <div class="content-wrapper">
+            <div class="container-fluid mt-3">
+              <div class="card shadow-sm border-0 rounded flex-fill d-flex">
+                <div class="card-body scrollable-card-body">
+                  <!-- Contenido variable -->
+                  <slot></slot>
+                </div>
+              </div>
+            </div>
+          </div>
   
           <!-- Footer -->
           <footer class="bg-light mt-3">
@@ -204,51 +190,53 @@
       </button>
     </div>
   </template>
-
+  
   <script>
   import { parseJwt } from '@/utils/auth';
-
+  import logo from '@/assets/images/icono-ecovolunteer_48x48.png';
+  import headerImage from '@/assets/images/dashboard/top-header-1600x250.png';
+  
   export default {
-    name: 'CompanyLayout',
+    name: 'UserLayout',
     props: {
-        titulo: {
+      titulo: {
         type: String,
         default: 'Bienvenido',
-        },
-        descripcion: {
+      },
+      descripcion: {
         type: String,
-        default: 'Ayuda el medio ambiente',
-        },
+        default: '¡Únete a los eventos y sé parte del cambio!',
+      },
     },
     data() {
       return {
+        logoSrc: logo,
+        headerImageSrc: headerImage,
         currentYear: new Date().getFullYear(),
         isSidebarCollapsed: false,
         userName: '',
       };
     },
-    computed: {
-      isEventosActive() {
-        return (
-          this.$route.path === '/misEventosCompany' ||
-          this.$route.path === '/gestionarEventos'
-        );
-      },
-    },
     methods: {
       toggleSidebar() {
         this.isSidebarCollapsed = !this.isSidebarCollapsed;
       },
+      logout() {
+        // Lógica para cerrar sesión
+        sessionStorage.removeItem('jwt_token');
+        sessionStorage.removeItem('user_role');
+        this.$router.push('/login');
+      },
       fetchUserName() {
         const token = sessionStorage.getItem('jwt_token');
         let role = sessionStorage.getItem('user_role');
-
+  
         if (!token) {
           console.error('No se encontró el token JWT en el sessionStorage');
           this.$router.push('/login'); // Redirige al inicio de sesión
           return;
         }
-
+  
         // Si no tenemos el rol en sessionStorage, intentamos obtenerlo del token
         if (!role) {
           const decodedToken = parseJwt(token);
@@ -261,18 +249,18 @@
             return;
           }
         }
-
+  
         let endpoint = '';
         if (role === 'Volunteer') {
-          endpoint = 'http://localhost:8082/api/users/me';
+          endpoint = 'http://localhost:8088/api/users/me';
         } else if (role === 'Company') {
           endpoint = 'http://localhost:8081/api/companies/me';
         } else {
           console.error('Rol desconocido:', role);
-          this.$router.push('/login'); // Redirige al inicio de sesión
+          this.$router.push('/login');
           return;
         }
-
+  
         fetch(endpoint, {
           method: 'GET',
           headers: {
@@ -307,3 +295,4 @@
     },
   };
   </script>
+  

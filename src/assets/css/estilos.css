@@ -84,12 +84,15 @@ html, body {
 /* Estilos para el botón de colapsar el sidebar */
 .toggle-button {
   position: fixed;
-  top: 15px; /* Ajusta este valor para posicionar el botón verticalmente */
-  left: 250px; /* Ancho del sidebar expandido */
+  top: 15px;
+  /* Ajusta este valor para posicionar el botón verticalmente */
+  left: 250px;
+  /* Ancho del sidebar expandido */
   transform: translateX(-50%);
   background-color: #2fb13a;
   border-radius: 50%;
-  z-index: 1050; /* Asegura que el botón esté por encima de otros elementos */
+  z-index: 1050;
+  /* Asegura que el botón esté por encima de otros elementos */
   color: white;
   width: 30px;
   height: 30px;
@@ -107,7 +110,8 @@ html, body {
 
 /* Ajuste de la posición del botón cuando el sidebar está colapsado */
 #sidebar.collapsed ~ .toggle-button {
-  left: 80px; /* Ancho del sidebar colapsado */
+  left: 80px;
+  /* Ancho del sidebar colapsado */
 }
 
 /* Estilos para el contenido principal */
@@ -205,9 +209,12 @@ html, body {
 
 /* Estilos adicionales */
 .form-container {
-  background: linear-gradient(to bottom, #c0ffa6, #ffffff); /* Degradado de verde a blanco */
-  padding: 2rem; /* Espaciado alrededor del contenido */
-  border-radius: 10px; /* Bordes redondeados */
+  background: linear-gradient(to bottom, #c0ffa6, #ffffff);
+  /* Degradado de verde a blanco */
+  padding: 2rem;
+  /* Espaciado alrededor del contenido */
+  border-radius: 10px;
+  /* Bordes redondeados */
 }
 
 .btn-purple {
@@ -220,10 +227,12 @@ html, body {
   color: #fff;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -258,4 +267,139 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.events-container {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 1rem;
+}
+
+/* Modificaciones para mostrar dos eventos por fila */
+.event-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  justify-content: center; /* Centrar el contenido */
+}
+
+/* Estilos para las tarjetas de eventos */
+.event-card {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  padding: 1rem;
+  flex: 1 1 calc(50% - 1rem);
+  /* Ajuste para que cada tarjeta ocupe el 50% del ancho menos el espacio del gap */
+  box-sizing: border-box;
+  max-width: calc(50% - 1rem);
+}
+
+/* Ajustamos la imagen para que sea responsiva */
+.event-image img {
+  width: 88%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+/* Ajustamos el contenido del evento */
+.event-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Ajuste de la información de participantes */
+.participants-info {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Estilos para el Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.modal-container {
+  background-color: #fff;
+  border-radius: 5px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s;
+}
+.modal-header,
+.modal-footer {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-body {
+  padding: 1rem;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+/* Animación "fade" para los modales */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+/* Animación "fadeIn" para la modal-container */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .event-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }

@@ -1,371 +1,158 @@
+<!-- src/views/indexUser.vue -->
 <template>
-  <div id="app-container">
-    <!-- Sidebar -->
-    <nav id="sidebar" :class="{ collapsed: isSidebarCollapsed }" class="bg-white">
-      <div class="d-flex align-items-center justify-content-between p-3 border-bottom border-end-0">
-        <router-link class="navbar-brand d-flex align-items-center" to="/indexUser">
-          <img
-            class="img-icon"
-            src="../assets/images/icono-ecovolunteer_48x48.png"
-            alt="Ecovolunteer Logo"
-          />
-          <h4 class="ms-2 mb-0" v-if="!isSidebarCollapsed">Ecovolunteer</h4>
-        </router-link>
-        <!-- Botón para colapsar el sidebar en dispositivos móviles -->
-        <button
-          class="btn d-lg-none"
-          type="button"
-          @click="toggleSidebar"
-          aria-label="Toggle navigation"
-        >
-          <!-- Icono para el botón -->
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-      <div class="collapse d-lg-block" :class="{ show: !isSidebarCollapsed }" id="sidebarMenu">
-        <ul class="nav nav-pills flex-column p-2">
-          <li class="nav-item">
-            <a class="nav-link disabled" tabindex="-1">
-              <span class="item-name">Menú</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/indexUser" exact>
-              <!-- Agregar icono -->
-              <i class="fas fa-home me-3"></i>
-              <span class="item-name">Inicio</span>
-            </router-link>
-          </li>
-          <li>
-            <hr />
-          </li>
-          <!-- Opción directa para Eventos -->
-          <li class="nav-item">
-            <router-link class="nav-link" to="/eventos" exact>
-              <!-- Agregar icono -->
-              <i class="fas fa-calendar-alt me-3"></i>
-              <span class="item-name">Eventos</span>
-            </router-link>
-          </li>
-          <!-- Puedes agregar más opciones aquí -->
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div id="main-content">
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light h-62 fixed-top" id="main-navbar">
-        <div class="container-fluid">
-          <!-- Botón para colapsar el navbar en dispositivos móviles -->
-          <button
-            class="navbar-toggler"
-            type="button"
-            @click="toggleNavbar"
-            aria-label="Toggle navigation"
-          >
-            <!-- Icono para el botón -->
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <!-- Contenido del navbar -->
-          <div class="collapse navbar-collapse" :class="{ show: navbarCollapsed }" id="navbarContent">
-            <ul class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0">
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle d-flex align-items-center"
-                  href="#"
-                  id="navbarDropdown"
-                  role="button"
-                  @click.prevent="toggleDropdown"
-                  aria-expanded="false"
-                >
-                  <img
-                    src="../assets/images/avatars/01.png"
-                    alt="User-Profile"
-                    class="rounded-circle img-avatar"
-                  />
-                  <div class="ms-2 d-none d-md-block">
-                    <h6 class="mb-0">Ruben Reyes</h6>
-                  </div>
-                </a>
-                <ul
-                  class="dropdown-menu dropdown-menu-end"
-                  :class="{ show: dropdownOpen }"
-                  aria-labelledby="navbarDropdown"
-                >
-                  <li><a class="dropdown-item" href="#">Perfil</a></li>
-                  <li>
-                    <a class="dropdown-item" href="#">Configuración Privada</a>
-                  </li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      <!-- Contenido Principal -->
-      <div id="content-area" class="p-4 mt-5">
-        <!-- Header -->
-        <div class="header-image mb-4">
-          <div class="position-relative">
-            <!-- Imagen del header -->
-            <img
-              src="../assets/images/dashboard/top-header-1600x250.png"
-              alt="header"
-              class="img-fluid img-header w-100"
-            />
-            <!-- Texto sobre la imagen -->
-            <div class="position-absolute top-50 translate-middle text-white ms-6">
-              <h1>Eventos Disponibles</h1>
-              <p>¡Únete a los eventos y sé parte del cambio!</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Encabezado de Tabla y Buscador -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <!-- Nombres de Columnas -->
-          <div class="d-flex gap-4 align-items-center">
-            <span class="sortable-column" @click="sortBy('eventDate')">
-              Fecha del evento
-              <i v-if="sortColumn === 'eventDate'" :class="getSortIcon('eventDate')" class="ms-2"></i>
-            </span>
-
-            <span class="sortable-column" @click="sortBy('eventName')">
-              Título
-              <i v-if="sortColumn === 'eventName'" :class="getSortIcon('eventName')" class="ms-2"></i>
-            </span>
-
-            <span class="sortable-column" @click="sortBy('companyName')">
-              Compañía
-              <i v-if="sortColumn === 'companyName'" :class="getSortIcon('companyName')" class="ms-2"></i>
-            </span>
-
-            <span class="sortable-column" @click="sortBy('totalRecommendations')">
-              Recomendaciones
-              <i v-if="sortColumn === 'totalRecommendations'" :class="getSortIcon('totalRecommendations')" class="ms-2"></i>
-            </span>
-
-            <span class="sortable-column" @click="sortBy('totalParticipantsApplied')">
-              Postulaciones
-              <i v-if="sortColumn === 'totalParticipantsApplied'" :class="getSortIcon('totalParticipantsApplied')" class="ms-2"></i>
-            </span>
-          </div>
-
-
-
-          <!-- Buscador e Ícono de Filtros -->
-          <div class="d-flex align-items-center">
-            <input
-              type="text"
-              class="form-control"
-              v-model="searchQuery"
-              placeholder="Buscar eventos..."
-              @input="applyFilters"
-              aria-label="Buscar eventos"
-            />
-            <!-- Ícono para mostrar el panel de filtros -->
-            <i
-              class="fas fa-filter ms-3 fs-4"
-              role="button"
-              @click="toggleFilterPanel"
-              aria-label="Mostrar filtros"
-            ></i>
-          </div>
-        </div>
-
-        <!-- Lista de Eventos -->
-        <div class="events-container">
-          <div v-if="isLoading" class="text-center">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
-          </div>
-
-          <div v-else-if="errorMessage" class="alert alert-danger" role="alert">
-            {{ errorMessage }}
-          </div>
-
-          <div v-else-if="sortedEvents.length === 0" class="alert alert-info" role="alert">
-            No se encontraron eventos.
-          </div>
-
-          <div v-else class="event-list">
-            <div class="event-card" v-for="event in sortedEvents" :key="event.eventId">
-              <!-- Icono de personas en la esquina superior derecha -->
-              <div class="participants-info">
-                <i class="fas fa-users"></i> {{ event.totalParticipantsApplied }}/{{ event.requiredVolunteers }}
-              </div>
-              <div class="event-card-content">
-                <!-- Imagen del evento -->
-                <div class="event-image">
-                  <img :src="getFullImageUrl(event.image_url)" alt="Imagen del Evento" />
-                </div>
-                <!-- Detalles del evento -->
-                <div class="event-details">
-                  <h5 class="event-title"><strong>{{ event.eventName }}</strong></h5>
-                  <p class="event-company"><strong>Compañía:</strong> {{ event.companyName }}</p>
-                  <p class="event-address"><strong>Dirección:</strong> {{ event.addressLine }}</p>
-                  <p class="event-location">
-                    <strong>Ubicación:</strong> {{ event.addressLine }}, {{ event.cityName }}, {{ event.countryName }}
-                  </p>
-                  <p class="event-date-time">
-                    <strong>Fecha:</strong> {{ event.eventDate }} 
-                    <strong>Hora:</strong> {{ event.eventTime }}
-                  </p>
-                  <p class="event-description"><strong>Descripción:</strong> {{ event.description }}</p>
-                </div>
-              </div>
-              <!-- Línea divisoria -->
-              <hr />
-
-              <!-- Botones -->
-              <div class="event-footer">
-                <div class="row">
-                  <p class="text-end"> {{ event.totalRecommendations }} Recomendaciones</p>
-                </div>
-                <div class="row">
-                  <div class="col-md-6 mb-2">
-                    <button class="btn btn-primary w-100" @click="toggleApplication(event)">
-                    {{ event.hasApplied ? 'Cancelar Postulación' : 'Postularse como Voluntario' }}
-                  </button>
-
-
-                  </div>
-                  <div class="col-md-6 mb-2">
-                    <button class="btn btn-secondary w-100" @click="toggleRecommendation(event)">
-                      <i class="fas fa-thumbs-up"></i>
-                      {{ event.hasRecommended ? 'Cancelar Recomendación' : 'Recomendar' }}
-                    </button>
-
-                  </div>
-                </div>
-                <!-- Sección de preguntas -->
-                <div class="event-questions mt-3">
-                  <h6>Preguntas</h6>
-                  <ul>
-                    <li v-for="(question, index) in (event.questions ? event.questions.slice(0, 3) : [])" :key="index">
-                      <strong>{{ question.user }}:</strong> {{ question.text }}
-                      <div v-if="question.answer" class="answer">
-                        <strong>Respuesta:</strong> {{ question.answer }}
-                      </div>
-                    </li>
-                  </ul>
-                  <div class="add-question">
-                    <input
-                      type="text"
-                      v-model="newQuestionText[event.eventId]"
-                      placeholder="Haz una pregunta..."
-                      class="form-control"
-                      @keyup.enter="addQuestion(event)"
-                      aria-label="Añadir pregunta"
-                    />
-                    <button class="btn btn-primary mt-2" @click="addQuestion(event)">
-                      Enviar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel Lateral de Filtros -->
-        <transition name="slide">
-          <div class="filter-panel bg-light shadow-lg p-4" v-if="showFilters">
-            <button 
-              class="btn-close float-end" 
-              aria-label="Cerrar filtros" 
-              @click="toggleFilterPanel"
-            ></button>
-            <h5>Filtrar Eventos</h5>
-            <!-- Dropdowns de Filtros -->
-            <div class="mb-3">
-              <select class="form-select" v-model="selectedCountry" @change="loadDepartments" aria-label="Seleccionar país">
-                <option value="">País</option>
-                <option v-for="country in countries" :key="country.id" :value="country.name">
-                  {{ country.name }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" v-model="selectedDepartment" @change="loadCities" :disabled="!departments.length" aria-label="Seleccionar departamento">
-                <option value="">Departamento</option>
-                <option v-for="department in departments" :key="department.id" :value="department.name">
-                  {{ department.name }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" v-model="selectedCity" @change="loadLocalities" :disabled="!cities.length" aria-label="Seleccionar ciudad">
-                <option value="">Ciudad</option>
-                <option v-for="city in cities" :key="city.id" :value="city.name">
-                  {{ city.name }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" v-model="selectedLocality" @change="loadNeighborhoods" :disabled="!localities.length" aria-label="Seleccionar localidad">
-                <option value="">Localidad</option>
-                <option v-for="locality in localities" :key="locality.id" :value="locality.name">
-                  {{ locality.name }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" v-model="selectedNeighborhood" :disabled="!neighborhoods.length" aria-label="Seleccionar barrio">
-                <option value="">Barrio</option>
-                <option v-for="neighborhood in neighborhoods" :key="neighborhood.id" :value="neighborhood.name">
-                  {{ neighborhood.name }}
-                </option>
-              </select>
-            </div>
-            <!-- Botones -->
-            <div class="d-flex justify-content-between">
-              <button class="btn btn-primary" @click="applyFilters">Aplicar</button>
-              <button class="btn btn-secondary" @click="clearFilters">Limpiar</button>
-              <button class="btn btn-secondary" @click="toggleFilterPanel">Cancelar</button>
-
-            </div>
-          </div>
-        </transition>
+  <UserLayout titulo="Eventos Disponibles" descripcion="¡Únete a los eventos y sé parte del cambio!">
+    <!-- Encabezado de Tabla y Buscador -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Nombres de Columnas -->
+      <div class="d-flex gap-0 align-items-center">
+        <button class="btn btn-light">
+        <span class="sortable-column" @click="sortBy('eventDate')">
+          Fecha del evento
+          <i v-if="sortColumn === 'eventDate'" :class="getSortIcon('eventDate')" class="ms-2"></i>
+        </span>
+      </button>
+      <button class="btn btn-light">
+        <span class="sortable-column" @click="sortBy('eventName')">
+          Título
+          <i v-if="sortColumn === 'eventName'" :class="getSortIcon('eventName')" class="ms-2"></i>
+        </span>
+      </button>
+      <button class="btn btn-light">
+        <span class="sortable-column" @click="sortBy('companyName')">
+          Compañía
+          <i v-if="sortColumn === 'companyName'" :class="getSortIcon('companyName')" class="ms-2"></i>
+        </span>
+      </button>
+      <button class="btn btn-light">
+        <span class="sortable-column" @click="sortBy('totalRecommendations')">
+          Recomendaciones
+          <i v-if="sortColumn === 'totalRecommendations'" :class="getSortIcon('totalRecommendations')" class="ms-2"></i>
+        </span>
+      </button>
+      <button class="btn btn-light">
+        <span class="sortable-column" @click="sortBy('totalParticipantsApplied')">
+          Postulaciones
+          <i v-if="sortColumn === 'totalParticipantsApplied'" :class="getSortIcon('totalParticipantsApplied')" class="ms-2"></i>
+        </span>
+      </button>
       </div>
 
-      <!-- Footer -->
-      <footer class="bg-light mt-3">
-        <div class="d-flex justify-content-between align-items-center p-3">
-          <ul class="list-inline mb-0">
-            <li class="list-inline-item">
-              <a href="#">Políticas de privacidad</a>
-            </li>
-            <li class="list-inline-item"><a href="#">Términos de uso</a></li>
-          </ul>
-          <div>
-            ©{{ currentYear }} Ecovolunteer, Hecho por Ecovolunteer.
-          </div>
-        </div>
-      </footer>
+      <!-- Buscador e Ícono de Filtros -->
+      <div class="d-flex align-items-center">
+        <input
+          type="text"
+          class="form-control"
+          v-model="searchQuery"
+          placeholder="Buscar eventos..."
+          @input="applyFilters"
+          aria-label="Buscar eventos"
+        />
+        <!-- Ícono para mostrar el panel de filtros -->
+      <button class="btn btn-light">
+        <i
+          class="fas fa-filter fs-4"
+          role="button"
+          @click="toggleFilterPanel"
+          aria-label="Mostrar filtros"
+        ></i>
+      </button>
+      </div>
     </div>
 
-    <!-- Botón para colapsar el sidebar -->
-    <button
-      class="btn toggle-button"
-      @click="toggleSidebar"
-      aria-label="Toggle sidebar"
-    >
-      <i
-        class="fas"
-        :class="isSidebarCollapsed ? 'fa-arrow-right' : 'fa-arrow-left'"
-        style="color: white; font-size: 1.2rem;"
-      ></i>
-    </button>
-  </div>
+    <!-- Lista de Eventos -->
+    <div class="events-container">
+      <div v-if="isLoading" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
 
+      <div v-else-if="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
 
-    <!-- Modal de Confirmación con Transición -->
+      <div v-else-if="sortedEvents.length === 0" class="alert alert-info" role="alert">
+        No se encontraron eventos.
+      </div>
+
+      <div v-else class="event-list">
+        <div class="event-card" v-for="event in sortedEvents" :key="event.eventId">
+          <!-- Icono de personas en la esquina superior derecha -->
+          <div class="participants-info">
+            <i class="fas fa-users"></i> {{ event.totalParticipantsApplied }}/{{ event.requiredVolunteers }}
+          </div>
+          <div class="event-card-content">
+            <!-- Imagen del evento -->
+            <div class="event-image">
+              <img :src="getFullImageUrl(event.image_url)" alt="Imagen del Evento" />
+            </div>
+            <!-- Detalles del evento -->
+            <div class="event-details text-center">
+              <h5 class="event-title"><strong>{{ event.eventName }}</strong></h5>
+              <p class="event-company"><strong>Compañía:</strong> {{ event.companyName }}</p>
+              
+              <p class="event-location">
+                <strong>Ubicación:</strong> {{ event.addressLine }}, {{ event.cityName }}, {{ event.countryName }}
+              </p>
+              <p class="event-date-time">
+                <strong>Fecha:</strong> {{ event.eventDate }} 
+                <strong>Hora:</strong> {{ event.eventTime }}
+              </p>
+              <p class="event-description"><strong>Descripción:</strong> {{ event.description }}</p>
+            </div>
+          </div>
+          <!-- Línea divisoria -->
+          <hr />
+
+          <!-- Botones -->
+          <div class="event-footer">
+            <div class="row">
+              <p class="text-end"> {{ event.totalRecommendations }} Recomendaciones</p>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <button class="btn btn-primary w-100" @click="toggleApplication(event)">
+                  {{ event.hasApplied ? 'Cancelar Postulación' : 'Postularse como Voluntario' }}
+                </button>
+              </div>
+              <div class="col-md-6 mb-2">
+                <button class="btn btn-secondary w-100" @click="toggleRecommendation(event)">
+                  <i class="fas fa-thumbs-up"></i>
+                  {{ event.hasRecommended ? 'Cancelar Recomendación' : 'Recomendar' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Lateral de Filtros -->
+    <transition name="slide">
+      <FilterBar
+        v-if="showFilters"
+        :paises="paises"
+        :departamentos="departamentos"
+        :ciudades="ciudades"
+        :localidades="localidades"
+        :barrios="barrios"
+        v-model:selectedCountry="paisesFiltrados"
+        v-model:selectedDepartment="departamentosFiltrados"
+        v-model:selectedCity="ciudadesFiltradas"
+        v-model:selectedLocality="localidadesFiltradas"
+        v-model:selectedNeighborhood="barriosFiltrados"
+        @loadDepartments="loadDepartments"
+        @loadCities="loadCities"
+        @loadLocalities="loadLocalities"
+        @loadNeighborhoods="loadNeighborhoods"
+        @applyFilters="applyFilters"
+        @clearFilters="clearFilters"
+        @close="toggleFilterPanel"
+      />
+    </transition>
+
+    <!-- Modales -->
+    <!-- Modal de Confirmación para Cancelar Postulación -->
     <transition name="fade">
       <div v-if="showConfirmationModal" class="modal-overlay">
         <div class="modal-container">
@@ -388,14 +175,12 @@
       </div>
     </transition>
 
-    <!-- Modal de Notificación con Transición -->
+    <!-- Modal de Notificación -->
     <transition name="fade">
       <div v-if="showNotificationModal" class="modal-overlay">
         <div class="modal-container">
           <div class="modal-header">
-            <h5 class="modal-title" :class="notificationClass">
-              {{ notificationTitle }}
-            </h5>
+            <h5 class="modal-title">{{ notificationTitle }}</h5>
             <button type="button" class="close-button" @click="closeNotificationModal">&times;</button>
           </div>
           <div class="modal-body">
@@ -409,39 +194,52 @@
         </div>
       </div>
     </transition>
-    
-<!-- Modal de Confirmación para Recomendación con Transición -->
-<transition name="fade">
-  <div v-if="showRecommendationConfirmationModal" class="modal-overlay">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirmar Cancelación de Recomendación</h5>
-        <button type="button" class="close-button" @click="handleRecommendationModalCancel">&times;</button>
-      </div>
-      <div class="modal-body">
-        {{ recommendationConfirmationMessage }}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="handleRecommendationModalCancel">
-          Cancelar
-        </button>
-        <button type="button" class="btn btn-primary" @click="handleRecommendationModalConfirm">
-          Sí, cancelar recomendación
-        </button>
-      </div>
-    </div>
-  </div>
-</transition>
 
-  
+    <!-- Modal de Confirmación para Cancelar Recomendación -->
+    <transition name="fade">
+      <div v-if="showRecommendationConfirmationModal" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar Cancelación de Recomendación</h5>
+            <button type="button" class="close-button" @click="handleRecommendationModalCancel">&times;</button>
+          </div>
+          <div class="modal-body">
+            {{ recommendationConfirmationMessage }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="handleRecommendationModalCancel">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" @click="handleRecommendationModalConfirm">
+              Sí, cancelar recomendación
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal de Mensaje -->
+    <ModalMensaje
+      v-if="mostrarModal"
+      :config="modalConfig"
+      @close="mostrarModal = false"
+    />
+  </UserLayout>
 </template>
 
-
 <script>
+import UserLayout from '@/layouts/UserLayout.vue';
+import FilterBar from '@/components/FilterBar.vue';
 import { eventApiClient } from '@/services/api';
+import ModalMensaje from '@/components/modals/ModalMensaje.vue';
 
 export default {
   name: 'indexUser',
+  components: {
+    UserLayout,
+    FilterBar,
+    ModalMensaje,
+  },
   data() {
     return {
       currentYear: new Date().getFullYear(),
@@ -450,33 +248,40 @@ export default {
       dropdownOpen: false,
       searchQuery: '',
       selectedCompanyName: '',
-      selectedCountry: '',
-      selectedDepartment: '',
-      selectedCity: '',
-      selectedLocality: '',
-      selectedNeighborhood: '',
-      showFilters: false, 
-      countries: [],
-      departments: [],
-      cities: [],
-      localities: [],
-      neighborhoods: [],
-      events: [], 
-      newQuestionText: {},
+      paisesFiltrados: '',
+      departamentosFiltrados: '',
+      ciudadesFiltradas: '',
+      localidadesFiltradas: '',
+      barriosFiltrados: '',
+      showFilters: false,
+      paises: [],
+      departamentos: [],
+      ciudades: [],
+      localidades: [],
+      barrios: [],
+      events: [],
       isLoading: false,
       errorMessage: '',
-      sortColumn: 'eventDate', 
-      sortDirection: 'desc', 
+      sortColumn: 'eventDate',
+      sortDirection: 'desc',
       confirmationMessage: '',
       modalResolve: null,
       showConfirmationModal: false,
       showNotificationModal: false,
       notificationMessage: '',
       notificationTitle: '',
-      notificationType: '', 
+      notificationType: '',
       recommendationConfirmationMessage: '',
       showRecommendationConfirmationModal: false,
       recommendationModalResolve: null,
+      selectedEvent: null,
+      modalConfig: {
+        titulo: '',
+        mensaje: '',
+        botonTexto: '',
+        tipo: '',
+      },
+      mostrarModal: false,
     };
   },
   computed: {
@@ -485,7 +290,6 @@ export default {
 
       return this.events.slice().sort((a, b) => {
         let modifier = this.sortDirection === 'asc' ? 1 : -1;
-        // Asegúrate de que los campos existen y son comparables
         if (a[this.sortColumn] < b[this.sortColumn]) return -1 * modifier;
         if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier;
         return 0;
@@ -494,38 +298,23 @@ export default {
   },
   methods: {
     getFullImageUrl(imagePath) {
-      const baseUrl = "http://localhost:8090"; // Cambia este valor si tu backend está en otro dominio
+      const baseUrl = "http://localhost:8090";
       return imagePath ? `${baseUrl}${imagePath}` : "https://via.placeholder.com/300x200";
-    },
-    toggleSidebar() {
-      this.isSidebarCollapsed = !this.isSidebarCollapsed;
-    },
-    toggleNavbar() {
-      this.navbarCollapsed = !this.navbarCollapsed;
-    },
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
     },
     toggleFilterPanel() {
       this.showFilters = !this.showFilters;
-      if (!this.showFilters) {
-        // Opcional: Limpiar filtros al cerrar el panel
-        // this.clearFilters();
-      }
     },
     sortBy(column) {
       if (this.sortColumn === column) {
-        // Cambiar la dirección de ordenamiento si se hace clic en la misma columna
         this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
       } else {
-        // Cambiar a una nueva columna y establecer la dirección ascendente
         this.sortColumn = column;
         this.sortDirection = 'asc';
       }
-      this.fetchEvents(); // Volver a cargar los eventos con el nuevo ordenamiento
+      this.fetchEvents();
     },
     getSortIcon(column) {
-      if (this.sortColumn !== column) return ''; 
+      if (this.sortColumn !== column) return '';
       return this.sortDirection === 'asc' ? 'fa fa-arrow-up' : 'fa fa-arrow-down';
     },
     async fetchEvents() {
@@ -535,11 +324,13 @@ export default {
         const params = {};
 
         if (this.selectedCompanyName) params.companyName = this.selectedCompanyName;
-        if (this.selectedCity) params.cityName = this.selectedCity;
+        if (this.paisesFiltrados) params.countryId = this.paisesFiltrados;
+        if (this.departamentosFiltrados) params.departmentId = this.departamentosFiltrados;
+        if (this.ciudadesFiltradas) params.cityId = this.ciudadesFiltradas;
+        if (this.localidadesFiltradas) params.localityId = this.localidadesFiltradas;
+        if (this.barriosFiltrados) params.neighborhoodId = this.barriosFiltrados;
         if (this.sortColumn) params.sortBy = this.sortColumn;
         if (this.sortDirection) params.sortDirection = this.sortDirection;
-
-        // Añadir searchQuery si deseas buscar por nombre
         if (this.searchQuery) params.searchQuery = this.searchQuery;
 
         const response = await eventApiClient.get('', { params });
@@ -557,16 +348,16 @@ export default {
     async clearFilters() {
       this.searchQuery = '';
       this.selectedCompanyName = '';
-      this.selectedCountry = '';
-      this.selectedDepartment = '';
-      this.selectedCity = '';
-      this.selectedLocality = '';
-      this.selectedNeighborhood = '';
-      this.departments = [];
-      this.cities = [];
-      this.localities = [];
-      this.neighborhoods = [];
-      await this.fetchEvents(); // Obtener todos los eventos sin filtros
+      this.paisesFiltrados = '';
+      this.departamentosFiltrados = '';
+      this.ciudadesFiltradas = '';
+      this.localidadesFiltradas = '';
+      this.barriosFiltrados = '';
+      this.departamentos = [];
+      this.ciudades = [];
+      this.localidades = [];
+      this.barrios = [];
+      await this.fetchEvents();
     },
     async toggleApplication(event) {
       try {
@@ -580,23 +371,24 @@ export default {
           // Cancelar postulación
           await eventApiClient.delete(`/${event.eventId}/apply`);
           // Mostrar notificación de éxito
-          this.showNotification('Has cancelado tu postulación.', 'success');
+          this.showNotification('Has cancelado tu postulación.', 'Éxito');
         } else {
           // Postularse al evento
           await eventApiClient.post(`/${event.eventId}/apply`);
           // Mostrar notificación de éxito
-          this.showNotification('Te has postulado al evento.', 'success');
+          this.showNotification('Te has postulado al evento.', 'Éxito');
         }
         // Volver a obtener los eventos actualizados
         await this.fetchEvents();
       } catch (error) {
         console.error('Error al procesar la solicitud de postulación:', error);
         // Mostrar notificación de error
-        this.showNotification('Ocurrió un error al procesar tu solicitud.', 'error');
+        this.showNotification('Ocurrió un error al procesar tu solicitud.', 'Error');
       }
     },
     confirmCancellation(event) {
       this.confirmationMessage = `¿Estás seguro que deseas cancelar tu postulación al evento "${event.eventName}"?`;
+      this.selectedEvent = event;
       return new Promise((resolve) => {
         this.modalResolve = resolve;
         this.showConfirmationModal = true; // Mostrar el modal
@@ -618,661 +410,234 @@ export default {
         this.modalResolve = null;
       }
     },
-
     // Métodos para el modal de notificación
-    showNotification(message, type = 'success', title = '') {
+    showNotification(message, title = '') {
       this.notificationMessage = message;
-      this.notificationType = type;
-      this.notificationTitle = title || (type === 'success' ? 'Éxito' : 'Información');
+      this.notificationTitle = title || 'Información';
       this.showNotificationModal = true;
     },
     closeNotificationModal() {
       this.showNotificationModal = false;
       this.notificationMessage = '';
       this.notificationTitle = '';
-      this.notificationType = '';
     },
-
     async toggleRecommendation(event) {
-    try {
-      if (event.hasRecommended) {
-        // Mostrar confirmación antes de cancelar
-        const confirmed = await this.confirmRecommendationCancellation(event);
-        if (!confirmed) {
-          return; // Si el usuario cancela la acción, no hacemos nada
+      try {
+        if (event.hasRecommended) {
+          // Mostrar confirmación antes de cancelar
+          const confirmed = await this.confirmRecommendationCancellation(event);
+          if (!confirmed) {
+            return; // Si el usuario cancela la acción, no hacemos nada
+          }
+
+          // Cancelar recomendación
+          await eventApiClient.delete(`/${event.eventId}/recommend`);
+          // Mostrar notificación de éxito
+          this.showNotification('Has cancelado tu recomendación.', 'Éxito');
+        } else {
+          // Recomendar el evento
+          await eventApiClient.post(`/${event.eventId}/recommend`);
+          // Mostrar notificación de éxito
+          this.showNotification('Has recomendado el evento.', 'Éxito');
         }
-
-        // Cancelar recomendación
-        await eventApiClient.delete(`/${event.eventId}/recommend`);
-        // Mostrar notificación de éxito
-        this.showNotification('Has cancelado tu recomendación.', 'success');
-      } else {
-        // Recomendar el evento
-        await eventApiClient.post(`/${event.eventId}/recommend`);
-        // Mostrar notificación de éxito
-        this.showNotification('Has recomendado el evento.', 'success');
+        // Volver a obtener los eventos actualizados
+        await this.fetchEvents();
+      } catch (error) {
+        console.error('Error al procesar la recomendación:', error);
+        // Mostrar notificación de error
+        this.showNotification('Ocurrió un error al procesar tu solicitud.', 'Error');
       }
-      // Volver a obtener los eventos actualizados
-      await this.fetchEvents();
-    } catch (error) {
-      console.error('Error al procesar la recomendación:', error);
-      // Mostrar notificación de error
-      this.showNotification('Ocurrió un error al procesar tu solicitud.', 'error');
-    }
-  },
-
-  confirmRecommendationCancellation(event) {
-    this.recommendationConfirmationMessage = `¿Estás seguro que deseas cancelar tu recomendación al evento "${event.eventName}"?`;
-    return new Promise((resolve) => {
-      this.recommendationModalResolve = resolve;
-      this.showRecommendationConfirmationModal = true; // Mostrar el modal
-    });
-  },
-
-  handleRecommendationModalConfirm() {
-    // El usuario confirmó
-    this.showRecommendationConfirmationModal = false;
-    if (this.recommendationModalResolve) {
-      this.recommendationModalResolve(true);
-      this.recommendationModalResolve = null;
-    }
-  },
-
-  handleRecommendationModalCancel() {
-    // El usuario canceló
-    this.showRecommendationConfirmationModal = false;
-    if (this.recommendationModalResolve) {
-      this.recommendationModalResolve(false);
-      this.recommendationModalResolve = null;
-    }
-  },
-
-    // Métodos adicionales
-    joinEvent(event) {
-      this.showNotification(`Te has unido al evento: ${event.eventName}`, 'success');
-      // Aquí puedes agregar la lógica para unirse al evento
     },
-    recommendEvent(event) {
-      this.showNotification(`Has recomendado el evento: ${event.eventName}`, 'success');
-      // Lógica para manejar recomendaciones
+    confirmRecommendationCancellation(event) {
+      this.recommendationConfirmationMessage = `¿Estás seguro que deseas cancelar tu recomendación al evento "${event.eventName}"?`;
+      this.selectedEvent = event;
+      return new Promise((resolve) => {
+        this.recommendationModalResolve = resolve;
+        this.showRecommendationConfirmationModal = true; // Mostrar el modal
+      });
     },
-    addQuestion(event) {
-      if (this.newQuestionText[event.eventId]) {
-        // Aquí deberías realizar una llamada al backend para agregar la pregunta
-        // Por ahora, agregaremos la pregunta localmente
-        if (!event.questions) {
-          this.$set(event, 'questions', []);
+    handleRecommendationModalConfirm() {
+      // El usuario confirmó
+      this.showRecommendationConfirmationModal = false;
+      if (this.recommendationModalResolve) {
+        this.recommendationModalResolve(true);
+        this.recommendationModalResolve = null;
+      }
+    },
+    handleRecommendationModalCancel() {
+      // El usuario canceló
+      this.showRecommendationConfirmationModal = false;
+      if (this.recommendationModalResolve) {
+        this.recommendationModalResolve(false);
+        this.recommendationModalResolve = null;
+      }
+    },
+    // Métodos para cargar datos de los filtros
+    async loadCountries() {
+      try {
+        const response = await fetch('http://localhost:8090/api/addresses/countries');
+        if (!response.ok) {
+          throw new Error('Error al obtener los países.');
         }
-        event.questions.push({
-          user: 'Tú',
-          text: this.newQuestionText[event.eventId],
-          answer: null, // Respuesta pendiente
-        });
-        this.newQuestionText[event.eventId] = '';
+        const data = await response.json();
+        this.paises = data;
+      } catch (error) {
+        console.error('Error al cargar países:', error);
+        this.mostrarModalMensaje('No se pudieron cargar los países. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
       }
     },
-    // Métodos para cargar datos de los filtros (ahora estáticos)
-    loadCountries() {
-      // Datos estáticos para países
-      this.countries = [
-        { id: 1, name: 'Colombia' },
-        { id: 2, name: 'México' },
-        // Agrega más países si es necesario
-      ];
-    },
-    loadDepartments() {
-      // Datos estáticos para departamentos según el país seleccionado
-      if (this.selectedCountry === 'Colombia') {
-        this.departments = [
-          { id: 1, name: 'Atlántico' },
-          { id: 2, name: 'Cundinamarca' },
-          { id: 3, name: 'Antioquia' },
-          // Agrega más departamentos
-        ];
-      } else if (this.selectedCountry === 'México') {
-        this.departments = [
-          { id: 4, name: 'Jalisco' },
-          { id: 5, name: 'Nuevo León' },
-          // Agrega más departamentos para México
-        ];
+    async loadDepartments() {
+      if (this.paisesFiltrados) {
+        try {
+          const response = await fetch(`http://localhost:8090/api/addresses/departments?countryId=${this.paisesFiltrados}`);
+          if (!response.ok) {
+            throw new Error('Error al obtener los departamentos.');
+          }
+          const data = await response.json();
+          this.departamentos = data;
+          // Limpiar campos dependientes
+          this.departamentosFiltrados = '';
+          this.ciudades = [];
+          this.ciudadesFiltradas = '';
+          this.localidades = [];
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        } catch (error) {
+          console.error('Error al cargar departamentos:', error);
+          this.mostrarModalMensaje('No se pudieron cargar los departamentos. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
+          // Limpiar campos en caso de error
+          this.departamentos = [];
+          this.departamentosFiltrados = '';
+          this.ciudades = [];
+          this.ciudadesFiltradas = '';
+          this.localidades = [];
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        }
       } else {
-        this.departments = [];
+        this.departamentos = [];
+        this.departamentosFiltrados = '';
+        this.ciudades = [];
+        this.ciudadesFiltradas = '';
+        this.localidades = [];
+        this.localidadesFiltradas = '';
+        this.barrios = [];
+        this.barriosFiltrados = '';
       }
-      this.selectedDepartment = '';
-      this.cities = [];
-      this.selectedCity = '';
-      this.localities = [];
-      this.selectedLocality = '';
-      this.neighborhoods = [];
-      this.selectedNeighborhood = '';
     },
-    loadCities() {
-      // Datos estáticos para ciudades según el departamento seleccionado
-      if (this.selectedDepartment === 'Atlántico') {
-        this.cities = [
-          { id: 1, name: 'Barranquilla' },
-          { id: 2, name: 'Sabanalarga' },
-          // Agrega más ciudades
-        ];
-      } else if (this.selectedDepartment === 'Cundinamarca') {
-        this.cities = [
-          { id: 3, name: 'Bogotá' },
-          { id: 4, name: 'Soacha' },
-          // Agrega más ciudades
-        ];
-      } else if (this.selectedDepartment === 'Antioquia') {
-        this.cities = [
-          { id: 5, name: 'Medellín' },
-          { id: 6, name: 'Envigado' },
-          // Agrega más ciudades
-        ];
-      } else if (this.selectedDepartment === 'Jalisco') {
-        this.cities = [
-          { id: 7, name: 'Guadalajara' },
-          { id: 8, name: 'Puerto Vallarta' },
-          // Agrega más ciudades
-        ];
-      } else if (this.selectedDepartment === 'Nuevo León') {
-        this.cities = [
-          { id: 9, name: 'Monterrey' },
-          { id: 10, name: 'San Pedro Garza García' },
-          // Agrega más ciudades
-        ];
+    async loadCities() {
+      if (this.departamentosFiltrados) {
+        try {
+          const response = await fetch(`http://localhost:8090/api/addresses/cities?departmentId=${this.departamentosFiltrados}`);
+          if (!response.ok) {
+            throw new Error('Error al obtener las ciudades.');
+          }
+          const data = await response.json();
+          this.ciudades = data;
+          // Limpiar campos dependientes
+          this.ciudadesFiltradas = '';
+          this.localidades = [];
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        } catch (error) {
+          console.error('Error al cargar ciudades:', error);
+          this.mostrarModalMensaje('No se pudieron cargar las ciudades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
+          // Limpiar campos en caso de error
+          this.ciudades = [];
+          this.ciudadesFiltradas = '';
+          this.localidades = [];
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        }
       } else {
-        this.cities = [];
+        this.ciudades = [];
+        this.ciudadesFiltradas = '';
+        this.localidades = [];
+        this.localidadesFiltradas = '';
+        this.barrios = [];
+        this.barriosFiltrados = '';
       }
-      this.selectedCity = '';
-      this.localities = [];
-      this.selectedLocality = '';
-      this.neighborhoods = [];
-      this.selectedNeighborhood = '';
     },
-    loadLocalities() {
-      // Datos estáticos para localidades según la ciudad seleccionada
-      if (this.selectedCity === 'Barranquilla') {
-        this.localities = [
-          { id: 1, name: 'Centro' },
-          { id: 2, name: 'El Prado' },
-          // Agrega más localidades
-        ];
-      } else if (this.selectedCity === 'Bogotá') {
-        this.localities = [
-          { id: 3, name: 'Usaquén' },
-          { id: 4, name: 'Chapinero' },
-          // Agrega más localidades
-        ];
-      } else if (this.selectedCity === 'Medellín') {
-        this.localities = [
-          { id: 5, name: 'El Poblado' },
-          { id: 6, name: 'Bello' },
-          // Agrega más localidades
-        ];
-      } else if (this.selectedCity === 'Guadalajara') {
-        this.localities = [
-          { id: 7, name: 'Tlaquepaque' },
-          { id: 8, name: 'Zapopan' },
-          // Agrega más localidades
-        ];
-      } else if (this.selectedCity === 'Monterrey') {
-        this.localities = [
-          { id: 9, name: 'San Pedro Garza García' },
-          { id: 10, name: 'Cumbres' },
-          // Agrega más localidades
-        ];
+    async loadLocalities() {
+      if (this.ciudadesFiltradas) {
+        try {
+          const response = await fetch(`http://localhost:8090/api/addresses/localities?cityId=${this.ciudadesFiltradas}`);
+          if (!response.ok) {
+            throw new Error('Error al obtener las localidades.');
+          }
+          const data = await response.json();
+          this.localidades = data;
+          // Limpiar campos dependientes
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        } catch (error) {
+          console.error('Error al cargar localidades:', error);
+          this.mostrarModalMensaje('No se pudieron cargar las localidades. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
+          // Limpiar campos en caso de error
+          this.localidades = [];
+          this.localidadesFiltradas = '';
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        }
       } else {
-        this.localities = [];
+        this.localidades = [];
+        this.localidadesFiltradas = '';
+        this.barrios = [];
+        this.barriosFiltrados = '';
       }
-      this.selectedLocality = '';
-      this.neighborhoods = [];
-      this.selectedNeighborhood = '';
     },
-    loadNeighborhoods() {
-      // Datos estáticos para barrios según la localidad seleccionada
-      if (this.selectedLocality === 'Centro') {
-        this.neighborhoods = [
-          { id: 1, name: 'La Candelaria' },
-          { id: 2, name: 'La Merced' },
-          // Agrega más barrios
-        ];
-      } else if (this.selectedLocality === 'Usaquén') {
-        this.neighborhoods = [
-          { id: 3, name: 'Santa Bárbara' },
-          { id: 4, name: 'La Florida' },
-          // Agrega más barrios
-        ];
-      } else if (this.selectedLocality === 'El Poblado') {
-        this.neighborhoods = [
-          { id: 5, name: 'La 70' },
-          { id: 6, name: 'Castilla' },
-          // Agrega más barrios
-        ];
-      } else if (this.selectedLocality === 'Tlaquepaque') {
-        this.neighborhoods = [
-          { id: 7, name: 'El Arenal' },
-          { id: 8, name: 'Plaza Patria' },
-          // Agrega más barrios
-        ];
-      } else if (this.selectedLocality === 'San Pedro Garza García') {
-        this.neighborhoods = [
-          { id: 9, name: 'Villa Fontana' },
-          { id: 10, name: 'Fundidora' },
-          // Agrega más barrios
-        ];
+    async loadNeighborhoods() {
+      if (this.localidadesFiltradas) {
+        try {
+          const response = await fetch(`http://localhost:8090/api/addresses/neighborhoods?localityId=${this.localidadesFiltradas}`);
+          if (!response.ok) {
+            throw new Error('Error al obtener los barrios.');
+          }
+          const data = await response.json();
+          this.barrios = data;
+          // Limpiar campos dependientes
+          this.barriosFiltrados = '';
+        } catch (error) {
+          console.error('Error al cargar barrios:', error);
+          this.mostrarModalMensaje('No se pudieron cargar los barrios. Por favor, intenta nuevamente.', 'Error', 'Cerrar', 'danger');
+          // Limpiar campos en caso de error
+          this.barrios = [];
+          this.barriosFiltrados = '';
+        }
       } else {
-        this.neighborhoods = [];
+        this.barrios = [];
+        this.barriosFiltrados = '';
       }
-      this.selectedNeighborhood = '';
+    },
+    mostrarModalMensaje(
+      mensaje,
+      titulo = 'Mensaje',
+      botonTexto = 'Cerrar',
+      tipo = 'primary'
+    ) {
+      console.log('Mostrar modal con mensaje:', mensaje);
+      this.modalConfig = {
+        titulo,
+        mensaje,
+        botonTexto,
+        tipo,
+      };
+      this.mostrarModal = true;
     },
   },
   mounted() {
-    this.loadCountries();
-    this.fetchEvents(); // Obtener eventos al montar el componente
+    const token = sessionStorage.getItem('jwt_token');
+    if (!token) {
+      this.$router.push('/login');
+    } else {
+      this.loadCountries();
+      this.fetchEvents();
+    }
   },
 };
 </script>
-
-<style scoped>
-/* Estilos personalizados */
-#app-container {
-  display: flex;
-  height: 100vh; /* Ocupar toda la altura de la ventana */
-  overflow: hidden; /* Evitar scroll en el body */
-}
-
-/* Estilos para el sidebar y su colapso */
-#sidebar {
-  width: 250px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-height: 100vh;
-  border-right: 1px solid #dee2e6;
-  overflow-y: auto;
-  transition: width 0.3s ease;
-}
-
-#sidebar.collapsed {
-  width: 80px;
-}
-
-/* Estilos para el contenido principal */
-#main-content {
-  flex-grow: 1;
-  margin-left: 250px;
-  display: flex;
-  flex-direction: column;
-  transition: margin-left 0.3s ease;
-}
-
-#sidebar.collapsed ~ #main-content {
-  margin-left: 80px;
-}
-
-#content-area {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Estilos para el navbar */
-#main-navbar {
-  width: calc(100% - 250px);
-  margin-left: 250px;
-  position: fixed;
-  top: 0;
-  z-index: 1000;
-  transition: margin-left 0.3s ease, width 0.3s ease;
-}
-
-#sidebar.collapsed ~ #main-navbar {
-  width: calc(100% - 80px);
-  margin-left: 80px;
-}
-
-/* Nombres de Columnas Ordenables */
-.sortable-column {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  font-weight: bold;
-}
-
-.sortable-column i {
-  transition: transform 0.2s;
-}
-
-/* Transición del panel lateral de filtros */
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.3s ease;
-}
-.slide-enter {
-  transform: translateX(100%);
-}
-.slide-leave-to {
-  transform: translateX(100%);
-}
-
-/* Panel lateral de filtros */
-.filter-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 350px;
-  z-index: 1050;
-  overflow-y: auto;
-  background-color: #f8f9fa;
-}
-
-/* Estilo para la lista de eventos */
-.events-container {
-  overflow-y: auto;
-  flex-grow: 1; /* Para que ocupe el espacio disponible */
-  padding-right: 1rem; /* Espacio para evitar superposición con el scrollbar */
-}
-
-.event-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding-bottom: 1rem; /* Evitar que el último elemento quede pegado al borde */
-}
-
-/* Estilos para las tarjetas de eventos */
-.event-card {
-  position: relative;
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  padding: 1rem;
-  width: 100%;
-  max-width: 800px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Icono de participantes */
-.participants-info {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: rgba(0, 123, 255, 0.1);
-  color: #007bff;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* Contenido del evento */
-.event-card-content {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-/* Imagen del evento */
-.event-image img {
-  width: 300px;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 0.25rem;
-}
-
-/* Detalles del evento */
-.event-details {
-  flex-grow: 1;
-}
-
-/* Sección de preguntas */
-.event-questions {
-  margin-top: 1rem;
-}
-
-.event-questions ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.event-questions li {
-  background-color: #f1f1f1;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.event-questions .answer {
-  margin-top: 0.5rem;
-  padding-left: 1rem;
-  border-left: 2px solid #007bff;
-}
-
-.add-question {
-  margin-top: 1rem;
-}
-
-.add-question input {
-  width: 100%;
-}
-
-.add-question button {
-  float: right;
-  margin-top: 0.5rem;
-}
-
-/* Botones */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-}
-
-.btn:hover {
-  opacity: 0.9;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background-color: #0069d9;
-}
-
-.btn-danger {
-  background-color: #007bff; /* Cambiado de rojo a azul para mantener coherencia */
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background-color: #0056b3; /* Tono más oscuro de azul */
-}
-
-.btn-info {
-  background-color: #17a2b8;
-  border-color: #17a2b8;
-  color: #fff;
-}
-
-.btn-info:hover {
-  background-color: #138496;
-  border-color: #117a8b;
-}
-
-/* Ajuste para dispositivos móviles */
-@media (max-width: 991.98px) {
-  #sidebar,
-  #sidebar.collapsed {
-    left: -250px;
-    transition: left 0.3s ease-in-out;
-  }
-  #sidebar.show {
-    left: 0;
-  }
-  #main-content {
-    margin-left: 0;
-  }
-  #main-navbar {
-    width: 100%;
-    margin-left: 0;
-  }
-  .toggle-button {
-    display: none;
-  }
-
-  /* Ajuste del card en dispositivos móviles */
-  .event-card-content {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .event-image img {
-    width: 100%;
-    height: auto;
-  }
-
-  .event-details {
-    width: 100%;
-    text-align: center;
-  }
-
-  /* Ajuste del panel de filtros en móviles */
-  .filter-panel {
-    width: 80%;
-  }
-}
-
-/* Botón de cierre dentro del panel de filtros */
-.filter-panel .btn-close {
-  font-size: 1.5rem;
-  border: none;
-  background: transparent;
-}
-
-/* Ajuste para el botón de cancelar */
-.filter-panel .btn-secondary {
-  background-color: #6c757d;
-}
-
-.filter-panel .btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-/* Asegurar que los botones estén espaciados correctamente */
-.filter-panel .d-flex.justify-content-between {
-  gap: 1rem;
-}
-
-/* Ajustes para dispositivos móviles si es necesario */
-@media (max-width: 991.98px) {
-  .filter-panel {
-    width: 80%;
-  }
-
-  /* Ajustar posición del botón de cierre en móviles */
-  .filter-panel .btn-close {
-    font-size: 1.2rem;
-  }
-}
-
-/* Estilos para el Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-container {
-  background-color: #fff;
-  border-radius: 5px;
-  width: 500px;
-  max-width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s;
-}
-
-.modal-header,
-.modal-footer {
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-body {
-  padding: 1rem;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  border-top: 1px solid #dee2e6;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* Estilos para el Modal de Notificación */
-.modal-header .text-success {
-  color: #28a745; /* Verde para éxito */
-}
-
-.modal-header .text-primary {
-  color: #007bff; /* Azul para información/error */
-}
-
-.modal-footer .btn-primary {
-  background-color: #007bff; /* Azul estándar */
-}
-
-.modal-footer .btn-primary:hover {
-  background-color: #0069d9;
-}
-
-/* Animación "fade" para los modales */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active for <2.1.8 */ {
-  opacity: 0;
-}
-
-/* Animación "fadeIn" para la modal-container */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-</style>
