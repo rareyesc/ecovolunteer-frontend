@@ -1,3 +1,4 @@
+// src/services/api.js
 import axios from 'axios';
 
 // Cliente para usuarios (voluntarios)
@@ -18,7 +19,15 @@ const companyApiClient = axios.create({
 
 // Cliente para eventos
 const eventApiClient = axios.create({
-  baseURL: 'http://localhost:8093/events', // Asegúrate de que esta URL sea correcta
+  baseURL: process.env.VUE_APP_EVENT_API_URL, // Asegúrate de que esta variable de entorno sea correcta
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Cliente para perfil de usuario/compañía
+const profileApiClient = axios.create({
+  baseURL: 'http://localhost:7071/api', // Cambiado para apuntar al directorio base de la API
   headers: {
     'Content-Type': 'application/json',
   },
@@ -58,6 +67,17 @@ userApiClient.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
+// Agregar interceptor al companyApiClient
+companyApiClient.interceptors.request.use(config => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
+
 // Agregar interceptor al eventApiClient
 eventApiClient.interceptors.request.use(
   (config) => {
@@ -72,4 +92,15 @@ eventApiClient.interceptors.request.use(
   }
 );
 
-export { userApiClient, companyApiClient, eventApiClient, getToken, refreshToken };
+// Agregar interceptor al profileApiClient
+profileApiClient.interceptors.request.use(config => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
+
+export { userApiClient, companyApiClient, eventApiClient, profileApiClient, getToken, refreshToken };

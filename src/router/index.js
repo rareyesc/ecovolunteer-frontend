@@ -6,6 +6,7 @@ import IndexAdmin from '@/views/indexAdmin.vue';
 import IndexUser from '@/views/indexUser.vue';
 import gestionarEventos from '@/views/gestionarEventos.vue';
 import misEventosCompany from '@/views/misEventosCompany.vue';
+import Test from '@/views/Test.vue';
 
 // Función para decodificar el token JWT y obtener los datos
 function parseJwt(token) {
@@ -44,6 +45,12 @@ const routes = [
     name: 'indexAdmin',
     component: IndexAdmin,
     meta: { requiresAuth: true, role: 'Admin' },
+  },
+  {
+    path: '/Test',
+    name: 'Test',
+    component: Test,
+    meta: { requiresAuth: false },
   },
   {
     path: '/indexUser',

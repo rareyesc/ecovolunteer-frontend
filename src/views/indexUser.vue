@@ -208,7 +208,7 @@
                 <div class="event-details">
                   <h5 class="event-title"><strong>{{ event.eventName }}</strong></h5>
                   <p class="event-company"><strong>Compañía:</strong> {{ event.companyName }}</p>
-                  <p class="event-address"><strong>Dirección:</strong> {{ event.addressLine }}</p>
+                  
                   <p class="event-location">
                     <strong>Ubicación:</strong> {{ event.addressLine }}, {{ event.cityName }}, {{ event.countryName }}
                   </p>
@@ -244,30 +244,39 @@
                   </div>
                 </div>
                 <!-- Sección de preguntas -->
-                <div class="event-questions mt-3">
-                  <h6>Preguntas</h6>
-                  <ul>
-                    <li v-for="(question, index) in (event.questions ? event.questions.slice(0, 3) : [])" :key="index">
-                      <strong>{{ question.user }}:</strong> {{ question.text }}
-                      <div v-if="question.answer" class="answer">
-                        <strong>Respuesta:</strong> {{ question.answer }}
-                      </div>
-                    </li>
-                  </ul>
-                  <div class="add-question">
-                    <input
-                      type="text"
-                      v-model="newQuestionText[event.eventId]"
-                      placeholder="Haz una pregunta..."
-                      class="form-control"
-                      @keyup.enter="addQuestion(event)"
-                      aria-label="Añadir pregunta"
-                    />
-                    <button class="btn btn-primary mt-2" @click="addQuestion(event)">
-                      Enviar
-                    </button>
-                  </div>
-                </div>
+                  <!-- <div class="event-questions mt-3">
+                    <h6>Preguntas</h6>
+                    <div v-if="event.questions && event.questions.length">
+                      <ul>
+                        <li v-for="(question, index) in event.questions.slice(0, 3)" :key="index">
+                          <strong>Usuario {{ question.userId }}:</strong> {{ question.questionText }}
+                          <div v-if="question.answers && question.answers.length">
+                            <div v-for="answer in question.answers" :key="answer.answerId" class="answer">
+                              <strong>Respuesta:</strong> {{ answer.answerText }}
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div v-else>
+                      <p>No hay preguntas aún. ¡Sé el primero en preguntar!</p>
+                    </div>
+                    
+                    <div class="add-question">
+                      <input
+                        type="text"
+                        v-model="newQuestionText[event.eventId]"
+                        placeholder="Haz una pregunta..."
+                        class="form-control"
+                        @keyup.enter="addQuestion(event)"
+                        aria-label="Añadir pregunta"
+                      />
+                      <button class="btn btn-primary mt-2" @click="addQuestion(event)">
+                        Enviar
+                      </button>
+                    </div>
+                  </div> -->
+
               </div>
             </div>
           </div>
@@ -477,6 +486,7 @@ export default {
       recommendationConfirmationMessage: '',
       showRecommendationConfirmationModal: false,
       recommendationModalResolve: null,
+ 
     };
   },
   computed: {
@@ -696,21 +706,7 @@ export default {
       this.showNotification(`Has recomendado el evento: ${event.eventName}`, 'success');
       // Lógica para manejar recomendaciones
     },
-    addQuestion(event) {
-      if (this.newQuestionText[event.eventId]) {
-        // Aquí deberías realizar una llamada al backend para agregar la pregunta
-        // Por ahora, agregaremos la pregunta localmente
-        if (!event.questions) {
-          this.$set(event, 'questions', []);
-        }
-        event.questions.push({
-          user: 'Tú',
-          text: this.newQuestionText[event.eventId],
-          answer: null, // Respuesta pendiente
-        });
-        this.newQuestionText[event.eventId] = '';
-      }
-    },
+    
     // Métodos para cargar datos de los filtros (ahora estáticos)
     loadCountries() {
       // Datos estáticos para países
@@ -863,6 +859,27 @@ export default {
       }
       this.selectedNeighborhood = '';
     },
+    addQuestion(event) {
+    const questionText = this.newQuestionText[event.eventId];
+    if (questionText) {
+      eventApiClient.post(`/${event.eventId}/questions`, {
+        questionText: questionText,
+      })
+      .then(response => {
+        const question = response.data;
+        if (!event.questions) {
+          this.$set(event, 'questions', []);
+        }
+        event.questions.push(question);
+        this.newQuestionText[event.eventId] = '';
+        this.showNotification('Tu pregunta ha sido publicada.', 'success');
+      })
+      .catch(error => {
+        console.error('Error al agregar la pregunta:', error);
+        this.showNotification('Ocurrió un error al agregar tu pregunta.', 'error');
+      });
+    }
+  },
   },
   mounted() {
     this.loadCountries();
