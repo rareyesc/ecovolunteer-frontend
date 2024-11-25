@@ -8,25 +8,30 @@
       <div class="card shadow-sm border-0 rounded flex-fill d-flex">
         <div class="card-body scrollable-card-body">
 
-          <ActionButtons @mostrarFormulario="mostrarFormulario" />
+          <ActionButtons @mostrarFormulario="mostrarFormulario" @mostrarFiltro="mostrarFiltro = true" />
 
           <hr />
 
           <!-- Barra de filtrado -->
           <FilterBar
-            v-if="!formularioVisible"
+            v-if="mostrarFiltro"
             :paises="paises"
             :departamentos="departamentosFiltrados"
             :ciudades="ciudadesFiltradas"
             :localidades="localidadesFiltradas"
             :barrios="barriosFiltrados"
-            :filtros="filtros"
-            @cargarDepartamentos="cargarDepartamentosFiltrados"
-            @cargarCiudades="cargarCiudadesFiltradas"
-            @cargarLocalidades="cargarLocalidadesFiltradas"
-            @cargarBarrios="cargarBarriosFiltrados"
-            @aplicarFiltros="aplicarFiltros"
-            @limpiarFiltros="limpiarFiltros"
+            v-model:selectedCountry="filtros.pais"
+            v-model:selectedDepartment="filtros.departamento"
+            v-model:selectedCity="filtros.ciudad"
+            v-model:selectedLocality="filtros.localidad"
+            v-model:selectedNeighborhood="filtros.barrio"
+            @loadDepartments="cargarDepartamentosFiltrados"
+            @loadCities="cargarCiudadesFiltradas"
+            @loadLocalities="cargarLocalidadesFiltradas"
+            @loadNeighborhoods="cargarBarriosFiltrados"
+            @applyFilters="aplicarFiltros"
+            @clearFilters="limpiarFiltros"
+            @close="mostrarFiltro = false"
           />
 
           <!-- Lista de lugares -->
@@ -124,6 +129,7 @@
         currentYear: new Date().getFullYear(),
         formularioVisible: null,
         mostrarModal: false,
+        mostrarFiltro: false,
         modalConfig: {
           titulo: '',
           mensaje: '',
@@ -216,7 +222,12 @@
     },
 
     fetchAllAddresses() {
-      fetch('http://localhost:8090/api/addresses/all')
+      const token = sessionStorage.getItem('jwt_token');
+      fetch('http://localhost:8090/api/addresses/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then(this.handleResponse)
         .then(response => response.json())
         .then(data => {
@@ -820,7 +831,12 @@
     },
 
     fetchLatestAddresses() {
-      fetch('http://localhost:8090/api/addresses/latest?limit=6')
+      const token = sessionStorage.getItem('jwt_token');
+      fetch('http://localhost:8090/api/addresses/latest?limit=6', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then(this.handleResponse)
         .then(response => response.json())
         .then(data => {

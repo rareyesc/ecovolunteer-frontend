@@ -11,10 +11,24 @@
         </button>
       </div>
     </div>
+
+    <button class="btn btn-light" @click="onMostrarFiltro">
+      <i class="fas fa-filter"></i>
+    </button>
+
   </template>
   
   <script>
   export default {
     name: 'ActionButtons',
+    emits: ['mostrarFormulario', 'mostrarFiltro'], // Declarar los eventos aquí
+    methods: {
+      onMostrarFormulario(formulario) {
+        this.$emit('mostrarFormulario', formulario);
+      },
+      onMostrarFiltro() {
+        this.$emit('mostrarFiltro');
+      },
+    },
   };
   </script>
