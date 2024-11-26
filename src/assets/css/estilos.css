@@ -15,6 +15,24 @@ html, body {
   overflow: hidden;
 }
 
+
+.btn-primary {
+  --bs-btn-color: #fff; /* Texto blanco */
+  --bs-btn-bg: #2fb13a; /* Fondo principal */
+  --bs-btn-border-color: #2fb13a; /* Borde principal */
+  --bs-btn-hover-color: #fff; /* Texto blanco al hacer hover */
+  --bs-btn-hover-bg: #27a034; /* Fondo más oscuro al hacer hover */
+  --bs-btn-hover-border-color: #218c2d; /* Borde más oscuro al hacer hover */
+  --bs-btn-focus-shadow-rgb: 47, 177, 58; /* Sombra verde al hacer focus */
+  --bs-btn-active-color: #fff; /* Texto blanco al estar activo */
+  --bs-btn-active-bg: #1f8b28; /* Fondo más oscuro al estar activo */
+  --bs-btn-active-border-color: #1a7723; /* Borde más oscuro al estar activo */
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); /* Sombra interna */
+  --bs-btn-disabled-color: #fff; /* Texto blanco cuando está deshabilitado */
+  --bs-btn-disabled-bg: #b8e0bb; /* Fondo verde deshabilitado */
+  --bs-btn-disabled-border-color: #a9d6ad; /* Borde deshabilitado */
+}
+
 /* Estilos para el sidebar */
 #sidebar {
   width: 250px;
@@ -300,7 +318,7 @@ html, body {
 
 /* Ajustamos la imagen para que sea responsiva */
 .event-image img {
-  width: 88%;
+  width: 100%;
   height: auto;
   max-height: 200px;
   object-fit: cover;
@@ -319,8 +337,8 @@ html, body {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background-color: rgba(0, 123, 255, 0.1);
-  color: #007bff;
+  background-color: rgb(249 249 249 / 82%);
+  color: #181d23;
   padding: 0.5rem;
   border-radius: 0.25rem;
   font-weight: bold;

@@ -3,38 +3,48 @@
   <UserLayout titulo="Eventos Disponibles" descripcion="¡Únete a los eventos y sé parte del cambio!">
     <!-- Encabezado de Tabla y Buscador -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <!-- Nombres de Columnas -->
+      <!-- Nombres de Columnas y Botón Toggle de Grilla -->
       <div class="d-flex gap-0 align-items-center">
-        <button class="btn btn-light">
-        <span class="sortable-column" @click="sortBy('eventDate')">
-          Fecha del evento
-          <i v-if="sortColumn === 'eventDate'" :class="getSortIcon('eventDate')" class="ms-2"></i>
-        </span>
-      </button>
-      <button class="btn btn-light">
-        <span class="sortable-column" @click="sortBy('eventName')">
-          Título
-          <i v-if="sortColumn === 'eventName'" :class="getSortIcon('eventName')" class="ms-2"></i>
-        </span>
-      </button>
-      <button class="btn btn-light">
-        <span class="sortable-column" @click="sortBy('companyName')">
-          Compañía
-          <i v-if="sortColumn === 'companyName'" :class="getSortIcon('companyName')" class="ms-2"></i>
-        </span>
-      </button>
-      <button class="btn btn-light">
-        <span class="sortable-column" @click="sortBy('totalRecommendations')">
-          Recomendaciones
-          <i v-if="sortColumn === 'totalRecommendations'" :class="getSortIcon('totalRecommendations')" class="ms-2"></i>
-        </span>
-      </button>
-      <button class="btn btn-light">
-        <span class="sortable-column" @click="sortBy('totalParticipantsApplied')">
-          Postulaciones
-          <i v-if="sortColumn === 'totalParticipantsApplied'" :class="getSortIcon('totalParticipantsApplied')" class="ms-2"></i>
-        </span>
-      </button>
+        <!-- Botón Toggle de Grilla -->
+        <button
+          class="btn btn-light me-2"
+          @click="toggleGrid"
+          :aria-label="'Cambiar a ' + (gridColumns === 1 ? '2' : gridColumns === 2 ? '3' : '1') + ' columnas'"
+        >
+          <i :class="getGridIcon(gridColumns)"></i>
+        </button>
+        
+        <!-- Botones de Ordenamiento -->
+        <button class="btn btn-light me-2">
+          <span class="sortable-column" @click="sortBy('eventDate')">
+            Fecha del evento
+            <i v-if="sortColumn === 'eventDate'" :class="getSortIcon('eventDate')" class="ms-2"></i>
+          </span>
+        </button>
+        <button class="btn btn-light me-2">
+          <span class="sortable-column" @click="sortBy('eventName')">
+            Título
+            <i v-if="sortColumn === 'eventName'" :class="getSortIcon('eventName')" class="ms-2"></i>
+          </span>
+        </button>
+        <button class="btn btn-light me-2">
+          <span class="sortable-column" @click="sortBy('companyName')">
+            Compañía
+            <i v-if="sortColumn === 'companyName'" :class="getSortIcon('companyName')" class="ms-2"></i>
+          </span>
+        </button>
+        <button class="btn btn-light me-2">
+          <span class="sortable-column" @click="sortBy('totalRecommendations')">
+            Recomendaciones
+            <i v-if="sortColumn === 'totalRecommendations'" :class="getSortIcon('totalRecommendations')" class="ms-2"></i>
+          </span>
+        </button>
+        <button class="btn btn-light me-2">
+          <span class="sortable-column" @click="sortBy('totalParticipantsApplied')">
+            Postulaciones
+            <i v-if="sortColumn === 'totalParticipantsApplied'" :class="getSortIcon('totalParticipantsApplied')" class="ms-2"></i>
+          </span>
+        </button>
       </div>
 
       <!-- Buscador e Ícono de Filtros -->
@@ -48,14 +58,9 @@
           aria-label="Buscar eventos"
         />
         <!-- Ícono para mostrar el panel de filtros -->
-      <button class="btn btn-light">
-        <i
-          class="fas fa-filter fs-4"
-          role="button"
-          @click="toggleFilterPanel"
-          aria-label="Mostrar filtros"
-        ></i>
-      </button>
+        <button class="btn btn-light ms-2" @click="toggleFilterPanel" aria-label="Mostrar filtros">
+          <i class="fas fa-filter fs-4"></i>
+        </button>
       </div>
     </div>
 
@@ -75,7 +80,7 @@
         No se encontraron eventos.
       </div>
 
-      <div v-else class="event-list">
+      <div :class="['event-list', `grid-${gridColumns}`]">
         <div class="event-card" v-for="event in sortedEvents" :key="event.eventId">
           <!-- Icono de personas en la esquina superior derecha -->
           <div class="participants-info">
@@ -105,19 +110,18 @@
           <hr />
 
           <!-- Botones -->
-          <div class="event-footer">
-            <div class="row">
-              <p class="text-end"> {{ event.totalRecommendations }} Recomendaciones</p>
+          <div class="event-footer d-flex flex-column">
+            <div class="row mb-2">
+              <p class="text-end mb-0"> {{ event.totalRecommendations }} Recomendaciones</p>
             </div>
             <div class="row">
               <div class="col-md-6 mb-2">
-                <button class="btn btn-primary w-100" @click="toggleApplication(event)">
+                <button class="btn btn-primary w-100 btn-standard-height" @click="toggleApplication(event)">
                   {{ event.hasApplied ? 'Cancelar Postulación' : 'Postularse como Voluntario' }}
                 </button>
               </div>
               <div class="col-md-6 mb-2">
-                <button class="btn btn-secondary w-100" @click="toggleRecommendation(event)">
-                  <i class="fas fa-thumbs-up"></i>
+                <button class="btn btn-secondary w-100 btn-standard-height" @click="toggleRecommendation(event)">
                   {{ event.hasRecommended ? 'Cancelar Recomendación' : 'Recomendar' }}
                 </button>
               </div>
@@ -282,6 +286,7 @@ export default {
         tipo: '',
       },
       mostrarModal: false,
+      gridColumns: 2, // Valor inicial de la grilla (1, 2 o 3)
     };
   },
   computed: {
@@ -629,6 +634,27 @@ export default {
       };
       this.mostrarModal = true;
     },
+    // Método para alternar la grilla
+    toggleGrid() {
+      if (this.gridColumns < 3) {
+        this.gridColumns += 1;
+      } else {
+        this.gridColumns = 1;
+      }
+    },
+    // Método para obtener el icono según el número de columnas
+    getGridIcon(columns) {
+      switch (columns) {
+        case 1:
+          return 'fas fa-th-list'; // Icono de lista
+        case 2:
+          return 'fas fa-th'; // Icono de 2 columnas
+        case 3:
+          return 'fas fa-th-large'; // Icono de 3 columnas
+        default:
+          return 'fas fa-th';
+      }
+    },
   },
   mounted() {
     const token = sessionStorage.getItem('jwt_token');
@@ -641,3 +667,226 @@ export default {
   },
 };
 </script>
+
+<style>
+/* Estilos para la grilla de eventos */
+.event-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  justify-content: center; /* Centrar el contenido */
+  transition: all 0.3s ease; /* Transición suave al cambiar la grilla */
+}
+
+/* Configuración para grid-1: una sola columna centrada */
+.event-list.grid-1 {
+  flex-direction: column;
+  align-items: center;
+}
+
+.event-list.grid-1 .event-card {
+  flex: 0 0 600px; /* No permitir crecimiento ni encogimiento */
+  max-width: 600px; /* Limita el ancho máximo de la tarjeta */
+  width: 100%; /* Asegura que ocupe el 100% del contenedor padre */
+  margin: 0 auto; /* Centra la tarjeta horizontalmente */
+}
+
+/* Configuración para grid-2: dos columnas */
+.event-list.grid-2 .event-card {
+  flex: 1 1 calc(50% - 1rem);
+  max-width: calc(50% - 1rem);
+}
+
+/* Configuración para grid-3: tres columnas */
+.event-list.grid-3 .event-card {
+  flex: 1 1 calc(33.333% - 1rem);
+  max-width: calc(33.333% - 1rem);
+}
+
+/* Asegurarse de que la grilla sea responsiva */
+@media (max-width: 768px) {
+  .event-list.grid-3 .event-card,
+  .event-list.grid-2 .event-card,
+  .event-list.grid-1 .event-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+/* Estilos para las tarjetas de eventos */
+.event-card {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Remover height: 100%; para evitar conflictos */
+}
+
+/* Contenido principal de la tarjeta que se expandirá */
+.event-card-content {
+  flex-grow: 1; /* Permite que esta sección ocupe el espacio disponible */
+}
+
+/* Imagen del evento */
+.event-image {
+  position: relative;
+  width: 100%;
+}
+
+.event-image img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+/* Información de Participantes dentro de la imagen */
+.participants-info {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8); /* Blanco semi-transparente */
+  color: #007bff;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1; /* Asegura que esté por encima de la imagen */
+}
+
+@media (max-width: 768px) {
+  .participants-info {
+    top: 5px;
+    right: 5px;
+    padding: 0.3rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Detalles del evento */
+.event-details {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.event-details p {
+  margin-bottom: 0.5rem;
+}
+
+/* Línea divisoria */
+hr {
+  border-top: 1px solid #dee2e6;
+  margin: 1rem 0;
+}
+
+/* Botones con altura estándar */
+.btn-standard-height {
+  height: 50px; /* Altura estándar para los botones */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustes para los botones dentro de event-footer */
+.event-footer {
+  width: 100%;
+}
+
+/* Estilos para el Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-container {
+  background-color: #fff;
+  border-radius: 5px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Animación "fade" para los modales */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Animación "fadeIn" para la modal-container */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .event-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  /* Ajuste del panel de filtros en móviles */
+  .filter-panel {
+    width: 80%;
+  }
+}
+</style>

@@ -40,7 +40,8 @@ async function refreshToken() {
         Authorization: `Bearer ${token}`,
       },
     });
-    localStorage.setItem('jwt_token', response.data.token);
+   // localStorage.setItem('jwt_token', response.data.token);
+    sessionStorage.setItem('jwt_token', response.data.token);
   } catch (error) {
     console.error('Error al refrescar el token:', error);
     window.location.href = '/logout';
