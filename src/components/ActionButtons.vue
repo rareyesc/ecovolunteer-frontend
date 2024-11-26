@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-5 mb-3">
         <button class="btn btn-warning w-100" @click="$emit('mostrarFormulario', 'lugar')">
           <i class="bi bi-geo-alt me-2"></i> Agregar Lugar
         </button>
@@ -10,11 +10,10 @@
           <i class="bi bi-calendar-plus me-2"></i> Crear Evento
         </button>
       </div>
+      <button class="btn btn-light col-md-1 mb-3" @click="onMostrarFiltro">
+        <i class="fas fa-filter"></i>
+      </button>
     </div>
-
-    <button class="btn btn-light" @click="onMostrarFiltro">
-      <i class="fas fa-filter"></i>
-    </button>
 
   </template>
   

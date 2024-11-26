@@ -6,7 +6,7 @@ body {
 
 html, body {
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #app-container {
@@ -420,4 +420,117 @@ html, body {
     flex: 1 1 100%;
     max-width: 100%;
   }
+}
+
+.navbar-custom {
+  width: 80%;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 10px;
+}
+
+.header {
+  min-height: calc(100vh - 100px); /* Ajustamos la altura restando el espacio del navbar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand,
+.navbar-custom .btn {
+  color: #000; /* Ajusta el color del texto para mejor visibilidad */
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .navbar-brand:hover,
+.navbar-custom .btn:hover {
+  color: #007bff; /* Color al pasar el mouse por encima */
+}
+
+@media (max-width: 992px) {
+  .navbar-custom {
+    width: 100%;
+    margin: 10px auto;
+  }
+}
+
+.texto-grande {
+  font-size: 6.5rem;
+}
+
+.bg-color-project {
+  background-color: #e6f5e8 !important;
+}
+
+.text-color-project {
+  color: #46bd4e !important;
+}
+
+.header-wrapper {
+  background: url('@/assets/images/DeWatermark.png') no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+.sidebar-adjust {
+  margin-top: -70px;
+}
+
+.wrapper {
+  background-color: lightgrey;
+}
+
+.section-header {
+  cursor: pointer;
+  color: gray;
+  user-select: none;
+}
+
+.section-header:hover {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
+}
+
+.bi-caret-right-fill {
+  transition: transform 0.2s ease;
+}
+
+.rotated {
+  transform: rotate(90deg);
+}
+
+.nav-link {
+  color: gray;
+}
+
+.nav-link:hover {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
+}
+
+/* Estilos para los botones del navbar */
+.nav-button {
+  color: inherit; /* Mantener el color de texto actual */
+}
+
+/* Estilos para el estado hover */
+.nav-button:hover {
+  background-color: #e6f5e8 !important; /* Fondo personalizado */
+  color: #46bd4e !important; /* Color de texto personalizado */
+  text-decoration: none; /* Quitar subrayado si existe */
+}
+
+/* Asegurar que los íconos también cambien de color */
+.nav-button:hover .bi {
+  color: #46bd4e !important;
+}
+
+/* Opcional: Estilos para el botón activo */
+.nav-button.active {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
 }
