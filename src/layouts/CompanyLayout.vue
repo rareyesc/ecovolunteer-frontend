@@ -134,7 +134,7 @@
                     class="dropdown-menu dropdown-menu-end"
                     aria-labelledby="navbarDropdown"
                   >
-                    <li><a class="dropdown-item" href="#">Perfil</a></li>
+                    <li><a class="dropdown-item" href="/profileCompany">Perfil</a></li>
                     <li>
                       <a class="dropdown-item" href="#">Configuración Privada</a>
                     </li>

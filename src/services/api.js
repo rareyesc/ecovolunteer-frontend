@@ -16,6 +16,14 @@ const companyApiClient = axios.create({
   },
 });
 
+//Cliente para perfil
+const profileApiClient = axios.create({
+  baseURL: process.env.VUE_APP_PROFILES, // Ahora apunta a 'http://localhost:7071/api'
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Cliente para eventos
 const eventApiClient = axios.create({
   baseURL: 'http://localhost:8093/events',
@@ -73,4 +81,17 @@ eventApiClient.interceptors.request.use(
   }
 );
 
-export { userApiClient, companyApiClient, eventApiClient, getToken, refreshToken };
+profileApiClient.interceptors.request.use(
+  config => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+export { userApiClient, companyApiClient, eventApiClient,profileApiClient, getToken, refreshToken };

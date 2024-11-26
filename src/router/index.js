@@ -7,6 +7,8 @@ import IndexUser from '@/views/indexUser.vue';
 import gestionarEventos from '@/views/gestionarEventos.vue';
 import misEventosCompany from '@/views/misEventosCompany.vue';
 import misEventosUser from '@/views/misEventosUser.vue';
+import profileCompany from '@/views/profileCompany.vue';
+import profileUser from '@/views/profileUser.vue';
 
 // Función para decodificar el token JWT y obtener los datos
 function parseJwt(token) {
@@ -26,8 +28,8 @@ function getRoleFromToken() {
 // Definir permisos para cada rol
 const rolePermissions = {
   Admin: ['indexAdmin'],
-  Company: ['indexCompany', 'misEventosCompany', 'gestionarEventos'],
-  Volunteer: ['indexUser'],
+  Company: ['indexCompany', 'misEventosCompany', 'gestionarEventos', 'profileCompany'],
+  Volunteer: ['indexUser', 'profileUser'],
 };
 
 const routes = [
@@ -71,6 +73,19 @@ const routes = [
     meta: { requiresAuth: true, role: 'Volunteer' },
   },
   {
+    path: '/profileCompany',
+    name: 'profileCompany',
+    component: profileCompany,
+    meta: { requiresAuth: true, role: 'Company' },
+  },
+  {
+    path: '/profileUser',
+    name: 'profileUser',
+    component: profileUser,
+    meta: { requiresAuth: true, role: 'Volunteer' },
+  },
+  
+  {
     path: '/logout',
     name: 'Logout',
     beforeEnter: (to, from, next) => {
@@ -78,6 +93,7 @@ const routes = [
       sessionStorage.removeItem('jwt_token');
       next({ name: 'Login' });
     },
+
   },
 ];
 
