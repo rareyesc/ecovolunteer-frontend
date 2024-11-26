@@ -469,3 +469,68 @@ html, body {
 .text-color-project {
   color: #46bd4e !important;
 }
+
+.header-wrapper {
+  background: url('@/assets/images/DeWatermark.png') no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+.sidebar-adjust {
+  margin-top: -70px;
+}
+
+.wrapper {
+  background-color: lightgrey;
+}
+
+.section-header {
+  cursor: pointer;
+  color: gray;
+  user-select: none;
+}
+
+.section-header:hover {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
+}
+
+.bi-caret-right-fill {
+  transition: transform 0.2s ease;
+}
+
+.rotated {
+  transform: rotate(90deg);
+}
+
+.nav-link {
+  color: gray;
+}
+
+.nav-link:hover {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
+}
+
+/* Estilos para los botones del navbar */
+.nav-button {
+  color: inherit; /* Mantener el color de texto actual */
+}
+
+/* Estilos para el estado hover */
+.nav-button:hover {
+  background-color: #e6f5e8 !important; /* Fondo personalizado */
+  color: #46bd4e !important; /* Color de texto personalizado */
+  text-decoration: none; /* Quitar subrayado si existe */
+}
+
+/* Asegurar que los íconos también cambien de color */
+.nav-button:hover .bi {
+  color: #46bd4e !important;
+}
+
+/* Opcional: Estilos para el botón activo */
+.nav-button.active {
+  background-color: #e6f5e8 !important;
+  color: #46bd4e !important;
+}
