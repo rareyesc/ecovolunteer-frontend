@@ -9,23 +9,22 @@
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header bg-warning text-dark">
+        <div class="modal-header k">
           <h5 class="modal-title" id="modalLabel">Refrescar sesión</h5>
         </div>
         <div class="modal-body">
           <p>Tu sesión está a punto de expirar. ¿Deseas extender la sesión?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success" @click="onRefresh">
+          <button type="button" class="btn btn-primary" @click="onRefresh">
             Extender sesión
           </button>
-          <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
+          <a href="/logout" class="btn btn-secondary">Cerrar sesión</a>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { refreshToken, getToken } from '@/services/api';
@@ -36,6 +35,9 @@ export default {
     return {
       modalInstance: null,
       modalId: 'modal-refresh',
+      refreshThreshold: 60, // Tiempo en segundos antes de la expiración para mostrar el modal
+      refreshInterval: null, // Referencia al intervalo
+      modalShown: false, // Para evitar múltiples llamadas al mostrar el modal
     };
   },
   methods: {
@@ -43,23 +45,41 @@ export default {
       try {
         await refreshToken();
         this.cerrarModal();
+        // Después de refrescar el token, reiniciar el intervalo
+        this.resetRefreshInterval();
       } catch (error) {
         console.error('Error al extender la sesión:', error);
         window.location.href = '/logout';
       }
     },
-    isTokenExpired(token) {
+    isTokenExpiringSoon(token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.exp < Math.floor(Date.now() / 1000);
+        const currentTime = Math.floor(Date.now() / 1000);
+        return payload.exp - currentTime < this.refreshThreshold;
       } catch {
         return true;
       }
     },
+    calcularTiempoRestante(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        return payload.exp - currentTime;
+      } catch {
+        return 0;
+      }
+    },
     async checkTokenExpiration() {
       const token = getToken();
-      if (token && this.isTokenExpired(token)) {
-        this.mostrarModal();
+      if (token) {
+        const tiempoRestante = this.calcularTiempoRestante(token);
+        if (tiempoRestante < this.refreshThreshold && tiempoRestante > 0) {
+          this.mostrarModal();
+        } else if (tiempoRestante <= 0) {
+          // Token ya expiró
+          window.location.href = '/logout';
+        }
       }
     },
     mostrarModal() {
@@ -69,18 +89,44 @@ export default {
           keyboard: false,
         });
       }
-      this.modalInstance.show();
+      if (!this.modalShown) {
+        this.modalInstance.show();
+        this.modalShown = true;
+      }
     },
     cerrarModal() {
       if (this.modalInstance) {
         this.modalInstance.hide();
+        this.modalShown = false;
       }
+    },
+    startRefreshInterval() {
+      // Iniciar la verificación cada 30 segundos
+      this.refreshInterval = setInterval(this.checkTokenExpiration, 30000); // 30,000 ms = 30 segundos
+    },
+    resetRefreshInterval() {
+      // Reiniciar el intervalo después de refrescar el token
+      clearInterval(this.refreshInterval);
+      this.startRefreshInterval();
+    },
+    stopRefreshInterval() {
+      // Detener el intervalo cuando el componente se destruye
+      clearInterval(this.refreshInterval);
     },
   },
   mounted() {
-    // Revisa la expiración del token cada minuto
+    // Verificar inmediatamente al montar el componente
     this.checkTokenExpiration();
-    setInterval(this.checkTokenExpiration, 60000);
+    // Iniciar la verificación periódica
+    this.startRefreshInterval();
+  },
+  beforeUnmount() {
+    // Limpiar el intervalo al destruir el componente
+    this.stopRefreshInterval();
   },
 };
 </script>
+
+<style scoped>
+/* Puedes agregar estilos personalizados aquí si lo deseas */
+</style>

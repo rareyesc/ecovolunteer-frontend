@@ -50,7 +50,7 @@
                         />
                       </div>
                       <div class="col-lg-12 d-flex justify-content-between mt-3">
-                        <div class="form-check mb-3">
+                        <div class="form-check mb-3" style="visibility: hidden;">
                           <input
                             type="checkbox"
                             class="form-check-input"
